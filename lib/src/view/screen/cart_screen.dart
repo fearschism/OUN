@@ -64,7 +64,9 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                       ),
                     );
                   },
-                  icon: Image.asset('images/add_task.png'),
+                  icon: Icon(
+                    Icons.add_box,
+                  ),
                 ),
               ],
             ),

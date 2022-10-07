@@ -18,6 +18,8 @@ Changlog:
   -Added Signup to firebase.
   -Added a Colection {'users'} to firestore so we can have all user-
   information in the dashboard
+BUG:
+Sign-up with an already used email enters the system but not the firebase.
 }
 */
 TextEditingController emailController = new TextEditingController();
@@ -96,15 +98,20 @@ class SignUpForm extends StatelessWidget {
               obscureText: false,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
-                hintText: "Your ID number",
+                hintText: "Your Saudi ID/Iqama number",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
                   child: Icon(Icons.numbers),
                 ),
               ),
               validator: (value) {
+                String pat = r'^[1|2]{1}[0-9]{9}$';
+                ;
+                RegExp reg = RegExp(pat);
                 if (value!.isEmpty || value.length < 10 || value.length > 10) {
                   return "please enter a correct, 10 digit ID";
+                } else if (!reg.hasMatch(value)) {
+                  return "The Saudi ID number starts with (1), and the Iqama starts with (2)";
                 } else {
                   return null;
                 }
@@ -179,6 +186,8 @@ class SignUpForm extends StatelessWidget {
               validator: (value) {
                 if (value! != PasswordController.text) {
                   return "Passwords must match";
+                } else if (value.isEmpty) {
+                  return "Please enter the password again";
                 } else {
                   return null;
                 }
@@ -193,17 +202,8 @@ class SignUpForm extends StatelessWidget {
                   Signup(context);
                 } catch (e) {
                   //  print("catched");
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            content: Text(e.toString()),
-                          ));
+                  showAlertDialog(context, e.toString());
                 }
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (Route<dynamic> route) => false,
-                );
               }
             },
             child: Text("Sign Up".toUpperCase()),
@@ -270,6 +270,7 @@ class SignUpForm extends StatelessWidget {
 //Signup to firebase with form-Auth/Validation [SAAD]
   Future Signup(BuildContext context) async {
     try {
+      bool ok = true;
       //Creates User using Email and Password and then adds it to the users collection then it adds all the extra information of the user
       FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -277,23 +278,57 @@ class SignUpForm extends StatelessWidget {
               password: PasswordController.text.trim())
           .then((data) {
         FirebaseFirestore.instance.collection("users").doc(data.user!.uid).set({
-          'ID': IDController.text,
+          'ID': int.parse(IDController.text),
           'email': emailController.text,
           'name': nameController.text,
           'password': PasswordController.text,
           'phone': PhoneController.text,
         });
+      }).onError((e, stackTrace) {
+        showAlertDialog(context, e.toString());
+      }).whenComplete(() {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (Route<dynamic> route) => false,
+        );
       });
     } catch (e) {
       print("catched");
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                content: Text(e.toString()),
-              ));
     }
+
     // dispose();
   }
+
+  showAlertDialog(BuildContext context, String e) {
+    // set up the buttons
+    Widget cancelButton = IconButton(
+      icon: Icon(Icons.close),
+      color: kPrimaryColor,
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Error!"),
+      content: Text(e),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  //regex for id number
 
   @override
   void dispose() {
