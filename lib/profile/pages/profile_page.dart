@@ -87,10 +87,13 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           ),
           Divider(),
+          const SizedBox(
+            height: defaultPadding,
+          ),
           Padding(
-              padding: EdgeInsets.only(bottom: 20, left: 30, right: 20),
-              child: ElevatedButton(
-                child: Text('LOGOUT'),
+              padding: EdgeInsets.only(bottom: 20, left: 100, right: 100),
+              child: ElevatedButton.icon(
+                label: Text('LOGOUT'),
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
 
@@ -101,6 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     (Route<dynamic> route) => false,
                   );
                 },
+                icon: Icon(Icons.exit_to_app),
               ))
         ],
       ),
