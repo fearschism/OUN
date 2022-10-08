@@ -11,7 +11,6 @@ import '../../controller/office_furniture_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../constants.dart';
 
-
 final OfficeFurnitureController controller =
     Get.put(OfficeFurnitureController());
 
@@ -22,7 +21,6 @@ class HomeScreen extends StatelessWidget {
     OfficeFurnitureListScreen(),
     ServiceRequestPageWidget(),
     ProfilePage(),
-    
   ];
 
   @override
@@ -32,11 +30,11 @@ class HomeScreen extends StatelessWidget {
         () {
           return BottomNavigationBar(
             backgroundColor: kPrimaryColor,
-            unselectedItemColor: Color.fromARGB(255, 77, 78, 76),
+            unselectedItemColor: Color.fromARGB(255, 99, 99, 99),
             currentIndex: controller.currentBottomNavItemIndex.value,
             showUnselectedLabels: true,
             onTap: controller.switchBetweenBottomNavigationItems,
-            fixedColor: Color.fromARGB(255, 10, 10, 10),
+            fixedColor: ButtonsColors,
             items: AppData.bottomNavigationItems
                 .map(
                   (element) => BottomNavigationBarItem(

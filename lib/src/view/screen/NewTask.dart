@@ -37,7 +37,10 @@ class _AddTaskState extends State<AddTask> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: kPrimaryColor,
-        title: Text('Add Task', style: KimberTheme.task,),
+        title: Text(
+          'Add Task',
+          style: TextStyle(color: Colors.white, fontSize: 30),
+        ),
       ),
       backgroundColor: kPrimaryLightColor,
       body: SingleChildScrollView(
@@ -54,12 +57,6 @@ class _AddTaskState extends State<AddTask> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InkWell(
-                    onTap: () {},
-                    child: DisplayImage(
-                      imagePath: user.image,
-                      onPressed: () {},
-                    )),
                 Text(
                   'Title',
                   style: KimberTheme.title1,
@@ -130,7 +127,7 @@ class _AddTaskState extends State<AddTask> {
                 ),
                 Slider(
                   value: _currentSliderValue,
-                  max: 200,
+                  max: 1000,
                   divisions: 20,
                   label: _currentSliderValue.round().toString(),
                   onChanged: (double value) {
@@ -142,15 +139,16 @@ class _AddTaskState extends State<AddTask> {
                     //firebase to save value
                   },
                 ),
-                Padding(
-                    padding: EdgeInsets.only(bottom: 20, left: 30, right: 20),
-                    child: ElevatedButton(
-                      child: Text('Create'),
+                Center(
+                    child: Padding(
+                  padding: EdgeInsets.only(bottom: 20, left: 30, right: 20),
+                  child: ElevatedButton.icon(
                       onPressed: () {
-                        //FirebaseAuth.instance.AddTask();
-                        
+                        //OnPressed Logic
                       },
-                    ))
+                      icon: const Icon(Icons.add),
+                      label: const Text("ADD TASK")),
+                ))
               ],
             ),
           ),

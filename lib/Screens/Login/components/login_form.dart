@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/Screens/Signup/components/signup_form.dart';
+import 'package:flutter_auth/core/app_style.dart';
 import 'package:flutter_auth/src/view/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -37,6 +38,7 @@ class LoginForm extends StatelessWidget {
             cursorColor: Color.fromARGB(255, 219, 219, 219),
             controller: LEmailController,
             decoration: InputDecoration(
+              border: textFieldStyle,
               hintText: "Your email",
               prefixIcon: Padding(
                 padding: const EdgeInsets.all(defaultPadding),
@@ -58,6 +60,7 @@ class LoginForm extends StatelessWidget {
               obscureText: true,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "Your password",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/constants.dart';
 
 const h1Style = TextStyle(
     fontSize: 60,
@@ -8,18 +9,17 @@ const h1Style = TextStyle(
     fontWeight: FontWeight.w900);
 
 const h2Style = TextStyle(
-    fontSize: 22,
-    color: Colors.black,
-    fontFamily: "Poppins",
-    fontWeight: FontWeight.w600,
-    );
+  fontSize: 22,
+  color: Colors.black,
+  fontFamily: "Poppins",
+  fontWeight: FontWeight.w600,
+);
 
 const h3Style = TextStyle(
     fontFamily: "Poppins",
     fontSize: 20,
     fontWeight: FontWeight.w500,
     color: Colors.black);
-
 
 const h4Style = TextStyle(
     fontFamily: "Poppins",
@@ -39,8 +39,7 @@ const bodyStyle1 = TextStyle(
     fontWeight: FontWeight.w100,
     color: Colors.black);
 
-final textFieldStyle = OutlineInputBorder(
-  borderRadius: BorderRadius.circular(15),
-  borderSide:  const BorderSide(color: Colors.grey, width: 1.0),
+final textFieldStyle = UnderlineInputBorder(
+  borderRadius: BorderRadius.circular(5),
+  borderSide: const BorderSide(color: ButtonsColors, width: 10.0),
 );
-

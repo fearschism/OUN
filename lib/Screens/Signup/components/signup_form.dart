@@ -8,6 +8,7 @@ import 'package:get/route_manager.dart';
 
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../constants.dart';
+import '../../../core/app_style.dart';
 import '../../Login/login_screen.dart';
 
 /*
@@ -29,6 +30,7 @@ TextEditingController nameController = new TextEditingController();
 TextEditingController IDController = new TextEditingController();
 TextEditingController PhoneController = new TextEditingController();
 final GlobalKey<FormState> _key = GlobalKey<FormState>();
+bool? emailtaken = null;
 
 class SignUpForm extends StatelessWidget {
   const SignUpForm({
@@ -48,6 +50,7 @@ class SignUpForm extends StatelessWidget {
               obscureText: false,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "Your name",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
@@ -75,6 +78,7 @@ class SignUpForm extends StatelessWidget {
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               onSaved: (email) {},
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "Your email",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
@@ -98,6 +102,7 @@ class SignUpForm extends StatelessWidget {
               obscureText: false,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "Your Saudi ID/Iqama number",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
@@ -126,6 +131,7 @@ class SignUpForm extends StatelessWidget {
               obscureText: false,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "Your phone number",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
@@ -156,6 +162,7 @@ class SignUpForm extends StatelessWidget {
               obscureText: true,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "Your password",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
@@ -177,6 +184,7 @@ class SignUpForm extends StatelessWidget {
               obscureText: true,
               cursorColor: Color.fromARGB(255, 219, 219, 219),
               decoration: InputDecoration(
+                border: textFieldStyle,
                 hintText: "repeat your password",
                 prefixIcon: Padding(
                   padding: const EdgeInsets.all(defaultPadding),
@@ -222,6 +230,7 @@ class SignUpForm extends StatelessWidget {
               );
             },
           ),
+          const SizedBox(height: defaultPadding)
         ],
       ),
     );
@@ -270,34 +279,52 @@ class SignUpForm extends StatelessWidget {
 //Signup to firebase with form-Auth/Validation [SAAD]
   Future Signup(BuildContext context) async {
     try {
-      bool ok = true;
-      //Creates User using Email and Password and then adds it to the users collection then it adds all the extra information of the user
-      FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: emailController.text.trim(),
-              password: PasswordController.text.trim())
-          .then((data) {
-        FirebaseFirestore.instance.collection("users").doc(data.user!.uid).set({
-          'ID': int.parse(IDController.text),
-          'email': emailController.text,
-          'name': nameController.text,
-          'password': PasswordController.text,
-          'phone': PhoneController.text,
+      await _fetchemail();
+      if (emailtaken == false) {
+        bool ok = true;
+        //Creates User using Email and Password and then adds it to the users collection then it adds all the extra information of the user
+        FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: emailController.text.trim(),
+                password: PasswordController.text.trim())
+            .then((data) {
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(data.user!.uid)
+              .set({
+            'ID': int.parse(IDController.text),
+            'email': emailController.text,
+            'name': nameController.text,
+            'password': PasswordController.text,
+            'phone': PhoneController.text,
+          });
+        }).onError((e, stackTrace) {
+          showAlertDialog(context, e.toString());
+        }).whenComplete(() {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (Route<dynamic> route) => false,
+          );
         });
-      }).onError((e, stackTrace) {
-        showAlertDialog(context, e.toString());
-      }).whenComplete(() {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (Route<dynamic> route) => false,
-        );
-      });
+      } else {
+        showAlertDialog(context, "Email is Already Taken!");
+      }
     } catch (e) {
       print("catched");
     }
 
     // dispose();
+  }
+
+  _fetchemail() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: emailController.text)
+        .get()
+        .then((ud) {
+      return emailtaken = ud.docs.length == 0 ? false : true;
+    });
   }
 
   showAlertDialog(BuildContext context, String e) {

@@ -30,10 +30,31 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         automaticallyImplyLeading: false,
-        toolbarHeight: 30,
         actions: [],
         centerTitle: true,
         elevation: 0,
+        title: Text(
+          'Tasks',
+          style: TextStyle(color: Colors.white, fontSize: 30),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AddTask();
+              },
+            ),
+          );
+        },
+        backgroundColor: ButtonsColors,
+        icon: const Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
+        label: const Text("Add Task", style: TextStyle(color: Colors.black)),
       ),
       backgroundColor: kPrimaryLightColor,
       body: SingleChildScrollView(
@@ -42,33 +63,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
           children: [
             Row(
               mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16, 0, 0, 0),
-                  child: Text(
-                    'My Tasks',
-                    style: KimberTheme.task,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  iconSize: 42,
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 10, 16, 0),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return AddTask();
-                        },
-                      ),
-                    );
-                  },
-                  icon: Icon(
-                    Icons.add_box,
-                  ),
-                ),
-              ],
+              children: [const Spacer(), const Divider()],
             ),
             Row(
               mainAxisSize: MainAxisSize.max,
