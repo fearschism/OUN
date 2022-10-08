@@ -19,16 +19,12 @@ class AppData {
       price: 469.99,
       //score: 3.5,
       city: 'Riyadh',
-      images: [
-        AppAsset.noimg
-      ],
+      images: [AppAsset.noimg],
       colors: <FurnitureColor>[
         FurnitureColor(color: const Color(0xFF616161), isSelected: true),
         FurnitureColor(color: const Color(0xFF424242)),
       ],
     ),
-    
-    
     Furniture(
       quantity: 1,
       isFavorite: false,
@@ -39,20 +35,17 @@ class AppData {
       city: 'Riyadh',
       images: [
         AppAsset.noimg,
-        
       ],
       colors: <FurnitureColor>[
         FurnitureColor(color: const Color(0xFF455a64), isSelected: true),
         FurnitureColor(color: const Color(0xFF263238)),
       ],
     ),
-    
   ];
 
   static List<BottomNavigationItem> bottomNavigationItems = [
     BottomNavigationItem(const Icon(Icons.home), 'Home'),
-    BottomNavigationItem(
-        const Icon(Icons.task), 'My Tasks'),
+    BottomNavigationItem(const Icon(Icons.task), 'My Tasks'),
     BottomNavigationItem(const Icon(Icons.person), 'Profile')
   ];
 }

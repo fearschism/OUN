@@ -28,14 +28,25 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kPrimaryLightColor,
         automaticallyImplyLeading: false,
         actions: [],
         centerTitle: true,
-        elevation: 0,
+        elevation: 1,
         title: Text(
           'Tasks',
-          style: TextStyle(color: Colors.white, fontSize: 30),
+          style: TextStyle(
+            color: kPrimaryColor,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            shadows: <Shadow>[
+              Shadow(
+                offset: Offset(5.0, 5.0),
+                blurRadius: 2.0,
+                color: ButtonsColors,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

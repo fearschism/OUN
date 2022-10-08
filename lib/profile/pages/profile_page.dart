@@ -32,18 +32,29 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         children: [
           AppBar(
-            backgroundColor: kPrimaryColor,
+            backgroundColor: kPrimaryLightColor,
+            elevation: 1,
             title: Padding(
                 padding: EdgeInsets.only(bottom: 5),
                 child: Text(
                   'Profile',
                   style: TextStyle(
-                    fontSize: 30,
+                    shadows: <Shadow>[
+                      Shadow(
+                        offset: Offset(5.0, 5.0),
+                        blurRadius: 2.0,
+                        color: ButtonsColors,
+                      ),
+                    ],
+                    color: kPrimaryColor,
+                    fontSize: 25,
                     fontWeight: FontWeight.w900,
                   ),
                 )),
           ),
-          Divider(),
+          const SizedBox(
+            height: defaultPadding,
+          ),
           InkWell(
               onTap: () {
                 navigateSecondPage(EditImagePage());
@@ -93,7 +104,10 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
               padding: EdgeInsets.only(bottom: 20, left: 100, right: 100),
               child: ElevatedButton.icon(
-                label: Text('LOGOUT'),
+                label: Text(
+                  'LOGOUT',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
 
@@ -104,7 +118,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     (Route<dynamic> route) => false,
                   );
                 },
-                icon: Icon(Icons.exit_to_app),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(ButtonsColors)),
+                icon: Icon(
+                  Icons.exit_to_app,
+                  color: Colors.black,
+                ),
               ))
         ],
       ),

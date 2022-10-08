@@ -47,11 +47,12 @@ class OfficeFurnitureListScreen extends StatelessWidget {
                             return Text(
                               "Hello, " +
                                   username.toString() +
-                                  " 🧡"
+                                  " <3"
                                       "\n Welcome to Oun",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 25,
+                                color: Color.fromARGB(255, 114, 147, 244),
                                 shadows: <Shadow>[
                                   Shadow(
                                     offset: Offset(5.0, 5.0),
