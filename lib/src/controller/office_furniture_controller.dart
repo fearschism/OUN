@@ -31,12 +31,12 @@ class OfficeFurnitureController extends GetxController {
   void increaseItem(Furniture furniture) {
     furniture.quantity++;
     update();
-    calculateTotalPrice();
+    
   }
 
   void decreaseItem(Furniture furniture) {
     furniture.quantity = furniture.quantity-- < 1 ? 0 : furniture.quantity--;
-    calculateTotalPrice();
+    
     update();
     if (furniture.quantity < 1) {
       cartFurniture.removeWhere((element) => element == furniture);
@@ -47,16 +47,11 @@ class OfficeFurnitureController extends GetxController {
     if (furniture.quantity > 0) {
       cartFurniture.add(furniture);
       cartFurniture.assignAll(cartFurniture.distinctBy((item) => item));
-      calculateTotalPrice();
+      
     }
   }
 
-  calculateTotalPrice() {
-    totalPrice.value = 0;
-    for (var element in cartFurniture) {
-      totalPrice.value += element.quantity * element.price;
-    }
-  }
+  
 
   void clearCart() {
     cartFurniture.clear();

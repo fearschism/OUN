@@ -1,7 +1,10 @@
 import 'dart:js_util';
 import 'dart:math';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/core/app_asset.dart';
+import 'package:flutter_auth/src/model/furniture_color.dart';
 import '../../../core/app_extension.dart';
 import '../../view/widget/rating_bar.dart';
 import '../../../core/app_style.dart';
@@ -55,18 +58,11 @@ class FurnitureListView extends StatelessWidget {
           )
         : Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            
             children: [
-
-              
               _furnitureImage(furniture.images[0]),
               Expanded(
-                
                 child: Padding(
-                
-                
                   padding: const EdgeInsets.all(15),
-                  
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -81,11 +77,11 @@ class FurnitureListView extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ).fadeAnimation(1.4),
-                   ],
+                    ],
                   ),
                 ),
               ),
-        ],
+            ],
           );
 
     return GestureDetector(
@@ -113,18 +109,39 @@ class FurnitureListView extends StatelessWidget {
               },
             ),
           )
-        : ListView.builder(
-            shrinkWrap: true,
-            reverse: true,
-            physics: const ClampingScrollPhysics(),
-            itemCount: furnitureList.length,
-            itemBuilder: (_, index) {
-              Furniture furniture = furnitureList[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 15, top: 10),
-                child: _listViewItem(furniture, index),
-              );
-            },
-          );
+        : StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  reverse: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: snapshot.data?.docs.length,
+                  itemBuilder: (context, index) {
+                    Furniture furniture = Furniture(
+                        title: snapshot.data!.docs[index]['title'],
+                        description: snapshot.data!.docs[index]['description'],
+                        price: snapshot.data!.docs[index]['price'],
+                        city: snapshot.data!.docs[index]['city'],
+                        images: [
+                          AppAsset.noimg
+                        ],
+                        colors: <FurnitureColor>[
+                          FurnitureColor(
+                              color: const Color(0xFF616161), isSelected: true),
+                          FurnitureColor(color: const Color(0xFF424242)),
+                        ]);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 15, top: 10),
+                      child: _listViewItem(furniture, index),
+                    );
+                  },
+                );
+              } else {
+                return Text('empty');
+              }
+            });
   }
 }

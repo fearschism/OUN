@@ -1,15 +1,19 @@
+import 'dart:html';
+
 import './furniture_color.dart';
 
 class Furniture {
   String title;
   String description;
-  double price;
+  String price;
   int quantity;
   //double score;
   String city;
   List<String> images;
   bool isFavorite;
   List<FurnitureColor> colors;
+
+  
 
   Furniture({
     required this.title,
