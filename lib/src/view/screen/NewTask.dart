@@ -131,6 +131,7 @@ class _AddTaskState extends State<AddTask> {
                 height: defaultPadding,
               ),
               DropdownButtonFormField<String>(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
                   if (value == null) {
                     return 'City is required';
@@ -157,6 +158,7 @@ class _AddTaskState extends State<AddTask> {
                 height: defaultPadding,
               ),
               DropdownButtonFormField<String>(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
                   if (value == null) {
                     return 'Category is required';
@@ -194,10 +196,14 @@ class _AddTaskState extends State<AddTask> {
                   controller: MoneyCo,
                   maxLength: 5,
                   validator: ((value) {
-                    String pat = r'^[0-9]{5}$'; //not finished...
+                    String pat =
+                        r'(10[0-9]|1[1-9]\d|[2-9]\d\d|[1-9]\d\d\d|[1-9]\d\d\d\d|[5-9]\d)$';
+                    RegExp reg = RegExp(pat); //not finished...
                     if (value!.isEmpty) {
-                      return 'Enter The Maximum Amount Of Money You Can Pay... between 10-99999';
-                    } else {
+                      return 'Enter The Maximum Amount Of Money You Can Pay... between 50-99999';
+                    } else if (!reg.hasMatch(value))
+                      return "Price must be(50-99999) Riyals";
+                    else {
                       return null;
                     }
                   }),
@@ -278,9 +284,14 @@ SendNewTask(BuildContext context, String city, String Categ) async {
               return alert;
             },
           ))
-      .whenComplete(() => showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return suc;
-          }));
+      .whenComplete(() {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return suc;
+            });
+        TitleCo.clear();
+        DescCo.clear();
+        MoneyCo.clear();
+      });
 }

@@ -51,4 +51,13 @@ class AppAsset {
 
   static const emptyCart = "assets/images/empty_cart.png";
   static const emptyFavorite = "assets/images/empty_favorite.png";
+
+  static String IMGtoJPG(String source) {
+    if (source == "Computers and IT") {
+      return "images/IT.png";
+    } else if (source == "Other Tasks") {
+      return "images/Other.png";
+    } else
+      return "images/$source.png";
+  }
 }

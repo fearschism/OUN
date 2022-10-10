@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Screens/Login/login_screen.dart';
 import 'package:flutter_auth/components/background.dart';
 import 'package:flutter_auth/constants.dart';
+import 'package:flutter_auth/src/view/screen/NewTask.dart';
+import 'package:flutter_auth/src/view/screen/Search_screen.dart';
+import '../../../Screens/Welcome/welcome_screen.dart';
 import '../../../core/app_data.dart';
 import '../../../core/app_style.dart';
 import '../../model/furniture.dart';
@@ -12,6 +15,7 @@ import '../widget/furniture_list_view.dart';
 
 String username = "";
 final snapshot = FirebaseFirestore.instance;
+TextEditingController searchC = TextEditingController();
 Future getUserNameFromUID() async {
   final snapshot = await FirebaseFirestore.instance
       .collection('users')
@@ -76,10 +80,23 @@ class OfficeFurnitureListScreen extends StatelessWidget {
     );
   }
 
-  Widget _searchBar() {
+  Widget _searchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextField(
+        controller: searchC,
+        onEditingComplete: () {
+          if (searchC.toString() != null) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => searchScreen(
+                        searched: searchC.text,
+                      )),
+              (Route<dynamic> route) => false,
+            );
+          }
+        },
         decoration: InputDecoration(
             hintText: 'Search for Tasks...',
             prefixIcon: const Icon(Icons.search, color: Colors.black),
@@ -110,7 +127,7 @@ class OfficeFurnitureListScreen extends StatelessWidget {
         padding: const EdgeInsets.all(15),
         child: ListView(
           children: [
-            _searchBar(),
+            _searchBar(context),
             /*const Text("waiting for responce", style: h2Style),
             FurnitureListView(
               furnitureList: AppData.furnitureList,

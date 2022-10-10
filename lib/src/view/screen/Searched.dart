@@ -11,15 +11,17 @@ import '../../view/widget/rating_bar.dart';
 import '../../../core/app_style.dart';
 import '../../model/furniture.dart';
 
-class FurnitureListView extends StatelessWidget {
+class Searched extends StatelessWidget {
   final bool isHorizontal;
   final Function(Furniture furniture)? onTap;
   final List<Furniture> furnitureList;
+  final String searched;
 
-  const FurnitureListView(
+  const Searched(
       {Key? key,
       this.isHorizontal = true,
       this.onTap,
+      required this.searched,
       required this.furnitureList})
       : super(key: key);
 
@@ -55,6 +57,7 @@ class FurnitureListView extends StatelessWidget {
                   .fadeAnimation(0.8),
               //_furnitureScore(furniture),
               Text(furniture.city),
+              Text(furniture.price)
             ],
           )
         : Row(
@@ -78,6 +81,8 @@ class FurnitureListView extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ).fadeAnimation(1.4),
+                      const SizedBox(height: 5),
+                      Text(furniture.price)
                     ],
                   ),
                 ),
@@ -93,59 +98,57 @@ class FurnitureListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //l.retainWhere((str) => str.split(' ').any((word) => word.startsWith('some')));
+
     return isHorizontal == true
-        ? SizedBox(
-            height: 220,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: furnitureList.length,
-              itemBuilder: (_, index) {
-                Furniture furniture = furnitureList[index];
-                return _listViewItem(furniture, index);
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const Padding(
-                  padding: EdgeInsets.only(left: 15),
-                );
-              },
-            ),
-          )
-        : StreamBuilder(
+        ? StreamBuilder(
             stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  reverse: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: snapshot.data?.docs.length,
-                  itemBuilder: (context, index) {
-                    Furniture furniture = Furniture(
-                        title: snapshot.data!.docs[index]['title'],
-                        description: snapshot.data!.docs[index]['description'],
-                        price: snapshot.data!.docs[index]['price'],
-                        city: snapshot.data!.docs[index]['city'],
-                        images: [
-                          AppAsset.IMGtoJPG(
-                              snapshot.data!.docs[index]['category'])
-                        ],
-                        colors: <FurnitureColor>[
-                          FurnitureColor(
-                              color: const Color(0xFF616161), isSelected: true),
-                          FurnitureColor(color: const Color(0xFF424242)),
-                        ]);
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 15, top: 10),
-                      child: _listViewItem(furniture, index),
-                    );
-                  },
+                return SizedBox(
+                  height: 220,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (_, index) {
+                      String pat = r'\b' + searched.trim() + r'\b';
+                      RegExp reg = RegExp(pat, caseSensitive: false);
+                      if (reg.hasMatch(snapshot.data!.docs[index]['title'])) {
+                        Furniture furniture = Furniture(
+                            title: snapshot.data!.docs[index]['title'],
+                            description: snapshot.data!.docs[index]
+                                ['description'],
+                            price: snapshot.data!.docs[index]['price'],
+                            city: snapshot.data!.docs[index]['city'],
+                            images: [
+                              AppAsset.IMGtoJPG(
+                                  snapshot.data!.docs[index]['category'])
+                            ],
+                            colors: <FurnitureColor>[
+                              FurnitureColor(
+                                  color: const Color(0xFF616161),
+                                  isSelected: true),
+                              FurnitureColor(color: const Color(0xFF424242)),
+                            ]);
+                        return _listViewItem(furniture, index);
+                      } else
+                        return Text("");
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const Padding(
+                        padding: EdgeInsets.only(left: 15),
+                      );
+                    },
+                  ),
                 );
               } else {
                 return CircularProgressIndicator(
                   color: kPrimaryColor,
                 );
               }
-            });
+            },
+          )
+        : Column();
   }
 }
