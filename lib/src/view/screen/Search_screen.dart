@@ -16,14 +16,6 @@ class searchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: new IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
-              );
-            }),
         iconTheme: IconThemeData(
           color: Colors.black, // <-- SEE HERE
         ),

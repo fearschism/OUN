@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 class AppAsset {
   const AppAsset._();
 
@@ -54,10 +56,10 @@ class AppAsset {
 
   static String IMGtoJPG(String source) {
     if (source == "Computers and IT") {
-      return "images/IT.png";
+      return "assets/images/IT.png";
     } else if (source == "Other Tasks") {
-      return "images/Other.png";
+      return "assets/images/Other.png";
     } else
-      return "images/$source.png";
+      return "assets/images/$source.png";
   }
 }

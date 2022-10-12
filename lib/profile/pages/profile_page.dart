@@ -68,7 +68,9 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _fetch(),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator();
+                return CircularProgressIndicator(
+                  backgroundColor: kPrimaryColor,
+                );
               } else {
                 return buildUserInfoDisplay(
                     FetchName, 'Name', EditNameFormPage());
@@ -79,7 +81,9 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _fetch(),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator();
+                return CircularProgressIndicator(
+                  backgroundColor: kPrimaryColor,
+                );
               } else {
                 return buildUserInfoDisplay(
                     FetchPhone, 'Phone', EditPhoneFormPage());
@@ -90,7 +94,9 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _fetch(),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator();
+                return CircularProgressIndicator(
+                  backgroundColor: kPrimaryColor,
+                );
               } else {
                 return buildUserInfoDisplay(
                     FetchEmail, 'Email', EditEmailFormPage());

@@ -1,4 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_auth/constants.dart';
+import 'package:flutter_auth/core/app_asset.dart';
+import 'package:flutter_auth/core/app_extension.dart';
+import 'package:flutter_auth/src/model/furniture.dart';
+import 'package:flutter_auth/src/model/furniture_color.dart';
 import 'package:flutter_auth/src/view/screen/NewTask.dart';
 import 'package:flutter_auth/src/view/screen/home_screen.dart';
 import 'package:get/get.dart';
@@ -10,6 +16,8 @@ import '../../../common/kimber_util.dart';
 import '../../../common/kimber_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../../core/app_style.dart';
 
 class ServiceRequestPageWidget extends StatefulWidget {
   const ServiceRequestPageWidget({Key? key}) : super(key: key);
@@ -83,14 +91,61 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: Color(0x4D757575),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: Color(0x4D757575),
+                          ),
                         ),
-                      ),
-                      child: Row(
+                        child: StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('tasks')
+                                .where('author',
+                                    isEqualTo:
+                                        FirebaseAuth.instance.currentUser!.uid)
+                                .snapshots(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasData) {
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  reverse: true,
+                                  physics: const ClampingScrollPhysics(),
+                                  itemCount: snapshot.data?.docs.length,
+                                  itemBuilder: (context, index) {
+                                    Furniture furniture = Furniture(
+                                        title: snapshot.data!.docs[index]
+                                            ['title'],
+                                        description: snapshot.data!.docs[index]
+                                            ['description'],
+                                        price: snapshot.data!.docs[index]
+                                            ['price'],
+                                        city: snapshot.data!.docs[index]
+                                            ['city'],
+                                        images: [
+                                          AppAsset.IMGtoJPG(snapshot
+                                              .data!.docs[index]['category'])
+                                        ],
+                                        colors: <FurnitureColor>[
+                                          FurnitureColor(
+                                              color: const Color(0xFF616161),
+                                              isSelected: true),
+                                          FurnitureColor(
+                                              color: const Color(0xFF424242)),
+                                        ]);
+                                    return _listViewItem(furniture, index);
+                                  },
+                                );
+                              } else {
+                                return CircularProgressIndicator(
+                                  color: kPrimaryColor,
+                                );
+                              }
+                            })
+                        /*  //future Row Parsing[Sprint 3].
+                      Row(
+              
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -106,8 +161,8 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: Image.network(
-                                  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAaVBMVEX///9NTU1JSUlxcXFCQkK0tLRWVlY8PDz29vbt7e309PROTk74+Pj8/PxeXl67u7tFRUVkZGRaWlpqamo5OTnBwcGOjo6GhoagoKDV1dXKysrQ0NDd3d16enqRkZHj4+Oqqqp3d3eamppA1TNZAAAFtUlEQVR4nO2cC3eiOhRGSaThkUcBtbW1Ttv7/3/kPSdQryIKVYRc59trMVUXZLI5yUkIaBQBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIALrJeLEFiu72b4lMgQSJ7uZxiLEIhheKvhrC10CkM5a5aZwjDJ71Z+P3kyhWF2t/L7yWB4IzC8PzC8FRjeHxjeCgzvDwxvBYb3B4a3Mtjw7evldbM249cgEMP3KokLWcTxZvQahGH4spI/Cypu7BYdhOHLwXKVVOm4NQjBcL06XBYrduPWIARDdbzyl3yMWoMADLfJkaAuXiI7Yg0CMNwUreVbNWoNAjB8lS3DZMwQhmC4axuuRh33AzB8abdSOWoNAjB8bt28kYshmWbwxCAAw6yVS+PnAeXm8dAxJQDD6E+hD0Oo+yNoo2WhzbCEFIJhepRqVu8Dit3EQn4Pq0EIhtGn+ImilqunAb1wuxJaJMOuQ4IwjLJlfXEhY9EXQWtSk0l/QpIh0Q7DkIL2vpNJEi+f+uJnjDX7OUI8JKEGYViT5wNShzG53chlHUTphgwroRgOS4zGZtG7Ksu62+ritf+4OQ2vmH4am2dCLSvVZKYBz8nMaGjSK67mjf0uxcLtB9Dkre+IeQ1/E0XjR3j7pKpFVe0nQFL2PQXxvzG0ac4h38bOHc6AeBZ7mZkMrSE/NrRek98Y/zH9tbZ5QfuYZm/aK83o30wK7TQpOlf5Tev4T8QHhWbIRrlNrc0pNNbbGuM/Tg0rpw2m8aZBgs+JXTjhtBOi1FLx5mhklGsq5bziPIZUZarun4zPPsWJa5+bNEp9LOkDNmrE7c/efCo2lEOd8JZlJWlTiiyLDz4BYRmSj41e413E1WaDjJukf0cmOYeQ2jG3Up4FsC33Q7tdcfsUTpaaNuk3euccnYKzNZjNMPoWqnq1fO65f1EYI5tzMknTnJzIkuyMN2RnNqSR0PkISqeq+i/bClftbGj9kGK0jEtZJhub8jjA7ZEmAE1EyYxUOYLe0DaGZseH1DFUVf2qeac33Fu7Lefqh0tXKqWE+uJq5XWq4Y7HLw8Nff+r2+BG+0Pahsrp0qltlGdZp+I8hnmppKhKKVzMD2CzSc5h5AyTcQuljbOLT0BpPWhsKcuokvqhcoINOafSKyEqJ6RSdFh3tpnFMHeFdo4kaXCLedrlY5jXaZN9eLM+7fiM6uOsZdUcIjRJkqoWFFW6FKbeSWGlU9NZgzkMMyUPpiXx54BibLQ4XOqor50OpzYiPncvYAbDTB3VTeohV49fsTiarLXRZy8zpja00ac8Pvk0Mxm4MHMRfe6e1eQx/JDtRXxRLPtKyU+O6UJ2DvtTG350fTuh96boouiJYF1M52XGlIY08Xjr/voFXR9caqmbgV/aiP/pOHjaGG7PVTX5ulDGW3LmqDa6a31xOkOK4Pv5qq6ez0YxH+jno3g69ExoGK0vxSLZniviu3337QKyOjlPkxna6Hl1sXLxR1cUbfSVDMky+1JO1henMrTRU09vkrJz5H/rHQmPOenRk8Xw/XIEWVF1TCx/0wkbxdb64mSG7Tu9XYoni/Q0Hf1FJ2woWrPggAxFcXJL8Hed0KPl8RQpKEOfJw7jOHgkPC7l6DIjLMPWXU9zjR+xOvxec2CG4ugW8G9GwiOSg5EnNEOd/Hf+v65qo4xUZq8YmuE+21seCa/m4DGG8AxF8RnVCzPXC5LSvkMHaNgsa3zLmxT3D60EaEgjv/ELM7eg948xhGgoaMy+pRPWhj8zpCANRfFa9e/UX4jvz2EaikErT33U64uBGo6DH3ge2lCK/MENBT+qCkMYwvAvMlwLNT1iPeFq4qjfgxkM/bfTGD78bwzN+ztRcgLDx/+tr/mB4S2GD/+7iY//25cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/Bv988YmLwbg23AAAAAElFTkSuQmCC',
+                                child: _furnitureImage(furniture.images[0])
+                                  ,
                                   width: 100,
                                   height: 100,
                                   fit: BoxFit.cover,
@@ -133,7 +188,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            'Waiting in line (jarir book store)',
+                                            furniture.title,
                                             style:
                                                 KimberTheme.bodyText2.override(
                                               fontFamily: 'NatoSansKhmer',
@@ -156,7 +211,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Riyadh',
+                                          furniture.city,
                                           style: KimberTheme.bodyText1.override(
                                             fontFamily: 'NatoSansKhmer',
                                             color: Color(0x80303030),
@@ -174,7 +229,8 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                           ),
                         ],
                       ),
-                    ),
+                      */
+                        ),
                   ),
                 ),
               ],
@@ -183,5 +239,46 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
         ),
       ),
     );
+  }
+
+  Widget _listViewItem(Furniture furniture, int index) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _furnitureImage(furniture.images[0]),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(furniture.title, style: h4Style).fadeAnimation(0.8),
+                const SizedBox(height: 5),
+                //   _furnitureScore(furniture),
+                Text(furniture.city),
+                const SizedBox(height: 5),
+                Text(
+                  furniture.description,
+                  style: h5Style.copyWith(fontSize: 12),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ).fadeAnimation(1.4),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _furnitureImage(String image) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15.0),
+      child: Image.asset(
+        image,
+        width: 150,
+        height: 150,
+      ),
+    ).fadeAnimation(0.4);
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:js_util';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,8 +35,8 @@ class FurnitureListView extends StatelessWidget {
   Widget _furnitureImage(String image) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
-      child: Image.asset(
-        image,
+      child: Image(
+        image: AssetImage(image),
         width: 150,
         height: 150,
       ),
@@ -142,8 +141,8 @@ class FurnitureListView extends StatelessWidget {
                   },
                 );
               } else {
-                return CircularProgressIndicator(
-                  color: kPrimaryColor,
+                return LinearProgressIndicator(
+                  backgroundColor: kPrimaryColor,
                 );
               }
             });

@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +43,7 @@ class _AddTaskState extends State<AddTask> {
     final user = UserData.myUser;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Colors.black, // <-- SEE HERE
@@ -108,7 +107,7 @@ class _AddTaskState extends State<AddTask> {
                 controller: DescCo,
                 validator: ((value) {
                   if (value!.isEmpty || value.length < 10) {
-                    return 'The Description Must be at least 50 characters Long';
+                    return 'The Description Must be at least 10 characters Long';
                   } else {
                     return null;
                   }
@@ -213,12 +212,14 @@ class _AddTaskState extends State<AddTask> {
                       fillColor: kPrimaryLightColor,
                       border: textFieldStyle,
                       hintText: "The Maximum Amount Of Money You Can Pay...")),
-              const SizedBox(
-                height: defaultPadding,
-              ),
+              Spacer(),
               Center(
                   child: Padding(
-                padding: EdgeInsets.only(bottom: 20, left: 30, right: 20),
+                padding: EdgeInsets.only(
+                  bottom: 20,
+                  left: 30,
+                  right: 20,
+                ),
                 child: ElevatedButton.icon(
                     onPressed: () {
                       if (_keyValidation.currentState!.validate()) {

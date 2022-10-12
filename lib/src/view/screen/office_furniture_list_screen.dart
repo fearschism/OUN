@@ -13,25 +13,32 @@ import '../../model/furniture.dart';
 import '../../view/screen/office_furniture_detail_screen.dart';
 import '../widget/furniture_list_view.dart';
 
-String username = "";
-final snapshot = FirebaseFirestore.instance;
+var username;
 TextEditingController searchC = TextEditingController();
-Future getUserNameFromUID() async {
-  final snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where('uid',
-          isEqualTo: FirebaseAuth.instance.currentUser!.uid.toString())
-      .get();
-  username = snapshot.docs.first['name'];
-}
 
-class OfficeFurnitureListScreen extends StatelessWidget {
+class OfficeFurnitureListScreen extends StatefulWidget {
   const OfficeFurnitureListScreen({Key? key}) : super(key: key);
 
-  PreferredSize _appBar() {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(120),
-      child: SafeArea(
+  @override
+  State<OfficeFurnitureListScreen> createState() =>
+      _OfficeFurnitureListScreenState();
+}
+
+class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
+    with TickerProviderStateMixin {
+  late TabController tabc;
+  @override
+  void initState() {
+    super.initState();
+    tabc = new TabController(length: 8, vsync: this, initialIndex: 0);
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      toolbarHeight: 120,
+      backgroundColor: kPrimaryLightColor,
+      elevation: 0,
+      title: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(25),
           child: Row(
@@ -51,7 +58,7 @@ class OfficeFurnitureListScreen extends StatelessWidget {
                             return Text(
                               "Hello, " +
                                   username.toString() +
-                                  " <3"
+                                  " ❤️"
                                       "\n Welcome to Oun",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -77,6 +84,47 @@ class OfficeFurnitureListScreen extends StatelessWidget {
           ),
         ),
       ),
+      bottom: TabBar(
+          isScrollable: true,
+          controller: tabc,
+          // unselectedLabelColor: Colors.black.withOpacity(0.3),
+          indicatorColor: ButtonsColors,
+          indicator: BoxDecoration(
+            color: ButtonsColors,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          unselectedLabelColor: Colors.grey.withOpacity(0.6),
+          labelColor: kPrimaryColor,
+          overlayColor: MaterialStateProperty.all(kPrimaryColor),
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorWeight: 0.0,
+          indicatorPadding: EdgeInsets.all(5),
+          tabs: [
+            Tab(
+              child: Text('All'),
+            ),
+            Tab(
+              child: Text('Errands'),
+            ),
+            Tab(
+              child: Text('Computers and IT'),
+            ),
+            Tab(
+              child: Text('Construction'),
+            ),
+            Tab(
+              child: Text('Maintenance'),
+            ),
+            Tab(
+              child: Text('Food'),
+            ),
+            Tab(
+              child: Text('Transport'),
+            ),
+            Tab(
+              child: Text('Other Tasks'),
+            )
+          ]),
     );
   }
 
@@ -87,13 +135,12 @@ class OfficeFurnitureListScreen extends StatelessWidget {
         controller: searchC,
         onEditingComplete: () {
           if (searchC.toString() != null) {
-            Navigator.pushAndRemoveUntil(
+            Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => searchScreen(
                         searched: searchC.text,
                       )),
-              (Route<dynamic> route) => false,
             );
           }
         },
@@ -109,17 +156,15 @@ class OfficeFurnitureListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //                                               يفتح تاسك بيج
-    /*Future<Widget?> _navigate(Furniture furniture) {
+    //  يفتح تاسك بيج
+    Future<Widget?> _navigate(Furniture furniture) {
       return Navigator.push(
         context,
-        PageRouteBuilder(
-          transitionDuration: const Duration(seconds: 1),
-          pageBuilder: (_, __, ___) =>
-              OfficeFurnitureDetailScreen(furniture: furniture),
-        ),
+        MaterialPageRoute(
+            builder: (context) =>
+                OfficeFurnitureDetailScreen(furniture: furniture)),
       );
-    }*/
+    }
 
     return Scaffold(
       appBar: _appBar(),
@@ -128,16 +173,11 @@ class OfficeFurnitureListScreen extends StatelessWidget {
         child: ListView(
           children: [
             _searchBar(context),
-            /*const Text("waiting for responce", style: h2Style),
-            FurnitureListView(
-              furnitureList: AppData.furnitureList,
-              // onTap: _navigate,
-            ),*/
             const Text("Tasks", style: h2Style),
             FurnitureListView(
               furnitureList: AppData.furnitureList,
               isHorizontal: false,
-              //onTap: _navigate,
+              onTap: _navigate,
             ),
           ],
         ),
