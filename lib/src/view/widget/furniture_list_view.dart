@@ -14,11 +14,13 @@ class FurnitureListView extends StatelessWidget {
   final bool isHorizontal;
   final Function(Furniture furniture)? onTap;
   final List<Furniture> furnitureList;
+  final String? cat;
 
   const FurnitureListView(
       {Key? key,
       this.isHorizontal = true,
       this.onTap,
+      this.cat,
       required this.furnitureList})
       : super(key: key);
 
@@ -110,7 +112,7 @@ class FurnitureListView extends StatelessWidget {
             ),
           )
         : StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
+            stream: Mainstream(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
@@ -120,24 +122,34 @@ class FurnitureListView extends StatelessWidget {
                   physics: const ClampingScrollPhysics(),
                   itemCount: snapshot.data?.docs.length,
                   itemBuilder: (context, index) {
-                    Furniture furniture = Furniture(
-                        title: snapshot.data!.docs[index]['title'],
-                        description: snapshot.data!.docs[index]['description'],
-                        price: snapshot.data!.docs[index]['price'],
-                        city: snapshot.data!.docs[index]['city'],
-                        images: [
-                          AppAsset.IMGtoJPG(
-                              snapshot.data!.docs[index]['category'])
-                        ],
-                        colors: <FurnitureColor>[
-                          FurnitureColor(
-                              color: const Color(0xFF616161), isSelected: true),
-                          FurnitureColor(color: const Color(0xFF424242)),
-                        ]);
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 15, top: 10),
-                      child: _listViewItem(furniture, index),
-                    );
+                    if (snapshot.data!.docs.length > 0) {
+                      Furniture furniture = Furniture(
+                          title: snapshot.data!.docs[index]['title'],
+                          description: snapshot.data!.docs[index]
+                              ['description'],
+                          price: snapshot.data!.docs[index]['price'],
+                          city: snapshot.data!.docs[index]['city'],
+                          images: [
+                            AppAsset.IMGtoJPG(
+                                snapshot.data!.docs[index]['category'])
+                          ],
+                          colors: <FurnitureColor>[
+                            FurnitureColor(
+                                color: const Color(0xFF616161),
+                                isSelected: true),
+                            FurnitureColor(color: const Color(0xFF424242)),
+                          ]);
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15, top: 10),
+                        child: _listViewItem(furniture, index),
+                      );
+                    } else {
+                      return const Center(
+                          child: Text(
+                        "No Tasks in this Category",
+                        style: TextStyle(fontSize: 35, color: kPrimaryColor),
+                      ));
+                    }
                   },
                 );
               } else {
@@ -146,5 +158,18 @@ class FurnitureListView extends StatelessWidget {
                 );
               }
             });
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>>? Mainstream() {
+    //gets all categories into a mainstream
+    if (this.cat == null) {
+      return FirebaseFirestore.instance.collection('tasks').snapshots();
+      //What Category  (cat) is it will return the list with the category = Cat.trim() O(1) O(n+3)
+    } else {
+      return FirebaseFirestore.instance
+          .collection('tasks')
+          .where('category', isEqualTo: cat!.trim())
+          .snapshots();
+    }
   }
 }

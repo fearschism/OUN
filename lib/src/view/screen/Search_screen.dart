@@ -67,7 +67,7 @@ class searchScreen extends StatelessWidget {
             ),
             Searched(
               furnitureList: AppData.furnitureList,
-              isHorizontal: true,
+              isHorizontal: false,
               searched: searched,
               //onTap: _navigate,
             ),

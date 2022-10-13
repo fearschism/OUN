@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/core/app_asset.dart';
 import 'package:flutter_auth/src/model/furniture_color.dart';
+import 'package:flutter_auth/src/view/widget/empty_widget.dart';
 import '../../../core/app_extension.dart';
 import '../../view/widget/rating_bar.dart';
 import '../../../core/app_style.dart';
@@ -18,7 +19,7 @@ class Searched extends StatelessWidget {
 
   const Searched(
       {Key? key,
-      this.isHorizontal = true,
+      this.isHorizontal = false,
       this.onTap,
       required this.searched,
       required this.furnitureList})
@@ -99,16 +100,16 @@ class Searched extends StatelessWidget {
   Widget build(BuildContext context) {
     //l.retainWhere((str) => str.split(' ').any((word) => word.startsWith('some')));
 
-    return isHorizontal == true
+    return isHorizontal == false
         ? StreamBuilder(
             stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasData) {
                 return SizedBox(
-                  height: 220,
+                  height: MediaQuery.of(context).size.height,
                   child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: Axis.vertical,
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (_, index) {
                       String pat = r'\b' + searched.trim() + r'\b';
@@ -132,7 +133,7 @@ class Searched extends StatelessWidget {
                             ]);
                         return _listViewItem(furniture, index);
                       } else
-                        return Text("");
+                        return SizedBox.shrink();
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Padding(
@@ -148,6 +149,6 @@ class Searched extends StatelessWidget {
               }
             },
           )
-        : Column();
+        : Text("no ROW");
   }
 }

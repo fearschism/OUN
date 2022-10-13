@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../../core/app_color.dart';
@@ -20,22 +21,23 @@ class OfficeFurnitureDetailScreen extends StatelessWidget {
 
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
+      backgroundColor: kPrimaryLightColor,
       actions: [
         GetBuilder(
           builder: (OfficeFurnitureController controller) {
             return IconButton(
-              splashRadius: 18.0,
+              iconSize: 35,
               onPressed: () => controller.isFavoriteFurniture(furniture),
               icon: furniture.isFavorite
-                  ? const Icon(Icons.bookmark, color: Colors.black)
-                  : const Icon(Icons.bookmark_border, color: Colors.black),
+                  ? const Icon(Icons.report_problem, color: Colors.black)
+                  : const Icon(Icons.error, color: kPrimaryColor),
             );
           },
         )
       ],
       leading: IconButton(
         icon: const Icon(
-          FontAwesomeIcons.arrowLeft,
+          Icons.arrow_back,
           color: Colors.black,
         ),
         onPressed: () {
@@ -43,7 +45,21 @@ class OfficeFurnitureDetailScreen extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
-      title: Text(furniture.title, style: h2Style),
+      title: Text(
+        furniture.title.toUpperCase(),
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Color.fromARGB(255, 114, 147, 244),
+          shadows: <Shadow>[
+            Shadow(
+              offset: Offset(5.0, 5.0),
+              blurRadius: 2.0,
+              color: ButtonsColors,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -57,18 +73,18 @@ class OfficeFurnitureDetailScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const FittedBox(
+              const SizedBox(
                 child: Text('Price',
                     style: TextStyle(
                         color: Colors.black45, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 5),
-              FittedBox(child: Text("\$${furniture.price}", style: h2Style))
+              SizedBox(child: Text("\$${furniture.price}", style: h2Style))
             ],
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                primary: AppColor.lightBlack,
+                backgroundColor: AppColor.lightBlack,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 shape: RoundedRectangleBorder(
@@ -83,53 +99,6 @@ class OfficeFurnitureDetailScreen extends StatelessWidget {
     ).fadeAnimation(1.3);
   }
 
-  Widget furnitureImageSlider(double height) {
-    return Container(
-      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-      height: height * 0.5,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          PageView.builder(
-            onPageChanged: controller.switchBetweenPageViewItems,
-            itemCount: furniture.images.length,
-            itemBuilder: (_, index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Hero(
-                    tag: index,
-                    child: Image.asset(
-                      furniture.images[index],
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 20,
-            child: Obx(
-              () {
-                return SmoothIndicator(
-                    effect: const WormEffect(
-                        dotColor: Colors.white38, activeDotColor: Colors.white),
-                    // ),
-                    // offset: selectedPageViewIndex.toDouble(),
-                    offset: controller.currentPageViewItemIndicator.value
-                        .toDouble(),
-                    count: furniture.images.length);
-              },
-            ),
-          ),
-        ],
-        // ).fadeAnimation(0.2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -139,7 +108,6 @@ class OfficeFurnitureDetailScreen extends StatelessWidget {
         return Future.value(true);
       },
       child: Scaffold(
-        bottomNavigationBar: bottomBar(),
         appBar: _appBar(context),
         body: SingleChildScrollView(
           child: Padding(
@@ -147,10 +115,76 @@ class OfficeFurnitureDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                furnitureImageSlider(height),
-                Center(
-                  
+                PreferredSize(
+                  preferredSize: Size.zero,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Chip(
+                        avatar: Icon(Icons.location_city, color: Colors.black),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          side: BorderSide(
+                            color: Colors.blue,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.all(5.0),
+                        label: Text(
+                          furniture.city,
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            height: 1.4,
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryColor,
+                          ),
+                        ),
+                      ),
+                      Chip(
+                        avatar: Icon(Icons.location_city, color: Colors.black),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          side: BorderSide(
+                            color: Colors.blue,
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.all(5.0),
+                        label: Text(
+                          furniture.city,
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            height: 1.4,
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryColor,
+                          ),
+                        ),
+                      ),
+                      Chip(
+                        avatar: Icon(Icons.attach_money, color: kPrimaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          side: BorderSide(
+                            width: 2,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        backgroundColor: ButtonsColors,
+                        padding: const EdgeInsets.all(5.0),
+                        label: Text(
+                          furniture.price,
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            height: 1.4,
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryColor,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
+                Center(),
                 Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 10),
                   child: const Text("Synopsis",

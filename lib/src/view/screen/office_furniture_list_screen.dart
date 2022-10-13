@@ -33,19 +33,23 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
     tabc = new TabController(length: 8, vsync: this, initialIndex: 0);
   }
 
+  @override
+  void dispose() {
+    tabc.dispose();
+    super.dispose();
+  }
+
   AppBar _appBar() {
     return AppBar(
       toolbarHeight: 120,
       backgroundColor: kPrimaryLightColor,
       elevation: 0,
-      title: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(25),
+      title: Column(children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 25, right: 25, left: 25),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (FirebaseAuth.instance.currentUser != null) ...[
                     FutureBuilder(
@@ -62,7 +66,7 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
                                       "\n Welcome to Oun",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25,
+                                fontSize: 20,
                                 color: Color.fromARGB(255, 114, 147, 244),
                                 shadows: <Shadow>[
                                   Shadow(
@@ -78,23 +82,25 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
                   ] else ...[
                     const LoginScreen()
                   ],
+                  // search is here
                 ],
               ),
             ],
           ),
         ),
-      ),
+        _searchBar(context),
+      ]),
       bottom: TabBar(
           isScrollable: true,
           controller: tabc,
           // unselectedLabelColor: Colors.black.withOpacity(0.3),
           indicatorColor: ButtonsColors,
           indicator: BoxDecoration(
-            color: ButtonsColors,
+            color: kPrimaryColor,
             borderRadius: BorderRadius.circular(10),
           ),
           unselectedLabelColor: Colors.grey.withOpacity(0.6),
-          labelColor: kPrimaryColor,
+          labelColor: ButtonsColors,
           overlayColor: MaterialStateProperty.all(kPrimaryColor),
           indicatorSize: TabBarIndicatorSize.tab,
           indicatorWeight: 0.0,
@@ -157,32 +163,25 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
   @override
   Widget build(BuildContext context) {
     //  يفتح تاسك بيج
-    Future<Widget?> _navigate(Furniture furniture) {
-      return Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                OfficeFurnitureDetailScreen(furniture: furniture)),
-      );
+    Future _navigate(Furniture furniture) {
+      return Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return OfficeFurnitureDetailScreen(furniture: furniture);
+      }));
     }
 
     return Scaffold(
-      appBar: _appBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(15),
-        child: ListView(
-          children: [
-            _searchBar(context),
-            const Text("Tasks", style: h2Style),
-            FurnitureListView(
-              furnitureList: AppData.furnitureList,
-              isHorizontal: false,
-              onTap: _navigate,
-            ),
-          ],
-        ),
-      ),
-    );
+        resizeToAvoidBottomInset: false,
+        appBar: _appBar(),
+        body: TabBarView(controller: tabc, children: [
+          getALL(_navigate),
+          getByCategory(_navigate, "Errands"),
+          getByCategory(_navigate, "Computers and IT"),
+          getByCategory(_navigate, "Construction"),
+          getByCategory(_navigate, "maintenance"),
+          getByCategory(_navigate, "Food"),
+          getByCategory(_navigate, "Transport"),
+          getByCategory(_navigate, "Other Tasks"),
+        ]));
   }
 }
 
@@ -197,4 +196,25 @@ _fetchName() async {
       username = ud.get('name');
     });
   }
+}
+
+Widget getALL(dynamic Function(Furniture)? nav) {
+  return ListView(children: [
+    FurnitureListView(
+      furnitureList: AppData.furnitureList,
+      isHorizontal: false,
+      onTap: nav,
+    )
+  ]);
+}
+
+Widget getByCategory(dynamic Function(Furniture)? nav, String cat) {
+  return ListView(children: [
+    FurnitureListView(
+      furnitureList: AppData.furnitureList,
+      isHorizontal: false,
+      onTap: nav,
+      cat: cat,
+    )
+  ]);
 }
