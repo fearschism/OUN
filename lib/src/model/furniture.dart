@@ -1,8 +1,8 @@
-
-
 import './furniture_color.dart';
 
 class Furniture {
+  String id;
+  String author;
   String title;
   String description;
   String price;
@@ -13,9 +13,9 @@ class Furniture {
   bool isFavorite;
   List<FurnitureColor> colors;
 
-  
-
   Furniture({
+    required this.id,
+    required this.author,
     required this.title,
     required this.description,
     required this.price,

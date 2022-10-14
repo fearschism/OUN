@@ -115,6 +115,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                                   itemCount: snapshot.data?.docs.length,
                                   itemBuilder: (context, index) {
                                     Furniture furniture = Furniture(
+                                        id: snapshot.data!.docs[index].id,
                                         title: snapshot.data!.docs[index]
                                             ['title'],
                                         description: snapshot.data!.docs[index]
@@ -123,6 +124,8 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                                             ['price'],
                                         city: snapshot.data!.docs[index]
                                             ['city'],
+                                        author: snapshot.data!.docs[index]
+                                            ['author'],
                                         images: [
                                           AppAsset.IMGtoJPG(snapshot
                                               .data!.docs[index]['category'])

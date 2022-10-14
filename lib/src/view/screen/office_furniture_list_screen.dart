@@ -6,6 +6,7 @@ import 'package:flutter_auth/components/background.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/src/view/screen/NewTask.dart';
 import 'package:flutter_auth/src/view/screen/Search_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../Screens/Welcome/welcome_screen.dart';
 import '../../../core/app_data.dart';
 import '../../../core/app_style.dart';
@@ -62,9 +63,10 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
                             return Text(
                               "Hello, " +
                                   username.toString() +
-                                  " ❤️"
+                                  " 💙"
                                       "\n Welcome to Oun",
                               style: const TextStyle(
+                                fontFamily: 'Noto Sans CJK SC',
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
                                 color: Color.fromARGB(255, 114, 147, 244),

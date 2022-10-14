@@ -116,6 +116,8 @@ class Searched extends StatelessWidget {
                       RegExp reg = RegExp(pat, caseSensitive: false);
                       if (reg.hasMatch(snapshot.data!.docs[index]['title'])) {
                         Furniture furniture = Furniture(
+                            id: snapshot.data!.docs[index].id,
+                            author: snapshot.data!.docs[index]['author'],
                             title: snapshot.data!.docs[index]['title'],
                             description: snapshot.data!.docs[index]
                                 ['description'],

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/core/app_style.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 import '../../../common/kimber_theme.dart';
 import 'package:flutter_auth/Screens/Login/login_screen.dart';
@@ -14,6 +16,7 @@ import '../../../profile/user/Duser.dart';
 import '../../../profile/widgets/display_image_widget.dart';
 import '../../../profile/user/user_data.dart';
 import 'package:flutter_auth/Screens/Login/components/login_form.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 TextEditingController TitleCo = new TextEditingController();
 TextEditingController DescCo = new TextEditingController();
@@ -286,13 +289,18 @@ SendNewTask(BuildContext context, String city, String Categ) async {
             },
           ))
       .whenComplete(() {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return suc;
-            });
-        TitleCo.clear();
-        DescCo.clear();
-        MoneyCo.clear();
+        AwesomeDialog(
+                context: context,
+                dialogType: DialogType.success,
+                animType: AnimType.rightSlide,
+                headerAnimationLoop: false,
+                title: 'Task Added',
+                btnOkOnPress: () {
+                  TitleCo.clear();
+                  DescCo.clear();
+                  MoneyCo.clear();
+                },
+                btnOkIcon: FontAwesomeIcons.check)
+            .show();
       });
 }

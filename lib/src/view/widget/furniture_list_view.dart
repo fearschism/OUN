@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/core/app_asset.dart';
 import 'package:flutter_auth/src/model/furniture_color.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../core/app_extension.dart';
 import '../../view/widget/rating_bar.dart';
 import '../../../core/app_style.dart';
@@ -58,32 +59,105 @@ class FurnitureListView extends StatelessWidget {
               Text(furniture.city),
             ],
           )
-        : Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _furnitureImage(furniture.images[0]),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(furniture.title, style: h4Style).fadeAnimation(0.8),
-                      const SizedBox(height: 5),
-                      //   _furnitureScore(furniture),
-                      Text(furniture.city),
-                      const SizedBox(height: 5),
-                      Text(
-                        furniture.description,
-                        style: h5Style.copyWith(fontSize: 12),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ).fadeAnimation(1.4),
-                    ],
+        : Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withBlue(100).withOpacity(0.5),
+
+                  spreadRadius: 2,
+                  blurRadius: 3,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _furnitureImage(furniture.images[0]),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(furniture.title, style: h4Style)
+                            .fadeAnimation(0.8),
+                        const SizedBox(height: 5),
+                        //   _furnitureScore(furniture),
+
+                        const SizedBox(height: 5),
+                        Text(
+                          furniture.description,
+                          style: h5Style.copyWith(fontSize: 12),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ).fadeAnimation(1.4),
+                        Row(
+                          children: [
+                            Chip(
+                              avatar: Text("SAR",
+                                  style: TextStyle(
+                                    fontSize: 9.0,
+                                    height: 1,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryColor,
+                                  )),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                side: BorderSide(
+                                  width: 2,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                              backgroundColor: ButtonsColors,
+                              padding: const EdgeInsets.all(4.0),
+                              label: Text(
+                                furniture.price,
+                                style: TextStyle(
+                                  fontSize: 10.0,
+                                  height: 1.4,
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                                child: Chip(
+                              avatar: Icon(
+                                FontAwesomeIcons.locationDot,
+                                color: kPrimaryColor,
+                                size: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                side: BorderSide(
+                                  width: 2,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                              backgroundColor: ButtonsColors,
+                              padding: const EdgeInsets.all(4.0),
+                              label: Text(
+                                furniture.city,
+                                style: TextStyle(
+                                  fontSize: 10.0,
+                                  height: 1.4,
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ))
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ), //your widget here
           );
 
     return GestureDetector(
@@ -124,11 +198,13 @@ class FurnitureListView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     if (snapshot.data!.docs.length > 0) {
                       Furniture furniture = Furniture(
+                          id: snapshot.data!.docs[index].id,
                           title: snapshot.data!.docs[index]['title'],
                           description: snapshot.data!.docs[index]
                               ['description'],
                           price: snapshot.data!.docs[index]['price'],
                           city: snapshot.data!.docs[index]['city'],
+                          author: snapshot.data!.docs[index]['author'],
                           images: [
                             AppAsset.IMGtoJPG(
                                 snapshot.data!.docs[index]['category'])
@@ -164,7 +240,7 @@ class FurnitureListView extends StatelessWidget {
     //gets all categories into a mainstream
     if (this.cat == null) {
       return FirebaseFirestore.instance.collection('tasks').snapshots();
-      //What Category  (cat) is it will return the list with the category = Cat.trim() O(1) O(n+3)
+      //What Category  (cat) is it? will return the list with the category = Cat.trim() O(1) O(n+3)
     } else {
       return FirebaseFirestore.instance
           .collection('tasks')

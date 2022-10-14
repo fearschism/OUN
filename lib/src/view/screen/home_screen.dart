@@ -29,12 +29,12 @@ class HomeScreen extends StatelessWidget {
       bottomNavigationBar: Obx(
         () {
           return BottomNavigationBar(
-            backgroundColor: kPrimaryColor.withOpacity(0.75),
+            backgroundColor: kPrimaryLightColor.withOpacity(0.75),
             unselectedItemColor: Color.fromARGB(255, 99, 99, 99),
             currentIndex: controller.currentBottomNavItemIndex.value,
             showUnselectedLabels: true,
             onTap: controller.switchBetweenBottomNavigationItems,
-            fixedColor: ButtonsColors,
+            fixedColor: kPrimaryColor,
             items: AppData.bottomNavigationItems
                 .map(
                   (element) => BottomNavigationBarItem(
