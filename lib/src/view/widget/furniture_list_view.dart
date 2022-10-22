@@ -14,16 +14,14 @@ import '../../model/furniture.dart';
 class FurnitureListView extends StatelessWidget {
   final bool isHorizontal;
   final Function(Furniture furniture)? onTap;
-  final List<Furniture> furnitureList;
   final String? cat;
 
-  const FurnitureListView(
-      {Key? key,
-      this.isHorizontal = true,
-      this.onTap,
-      this.cat,
-      required this.furnitureList})
-      : super(key: key);
+  const FurnitureListView({
+    Key? key,
+    this.isHorizontal = true,
+    this.onTap,
+    this.cat,
+  }) : super(key: key);
 
   /*Widget _furnitureScore(Furniture furniture) {
     return Row(
@@ -43,7 +41,7 @@ class FurnitureListView extends StatelessWidget {
         width: 150,
         height: 150,
       ),
-    ).fadeAnimation(0.4);
+    ).fadeAnimation(0.1);
   }
 
   Widget _listViewItem(Furniture furniture, int index) {
@@ -54,7 +52,7 @@ class FurnitureListView extends StatelessWidget {
               Hero(tag: index, child: _furnitureImage(furniture.images[0])),
               const SizedBox(height: 10),
               Text(furniture.title.addOverFlow, style: h4Style)
-                  .fadeAnimation(0.8),
+                  .fadeAnimation(0.1),
               //_furnitureScore(furniture),
               Text(furniture.city),
             ],
@@ -62,14 +60,14 @@ class FurnitureListView extends StatelessWidget {
         : Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(5)),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.amber.withBlue(100).withOpacity(0.5),
+                  color: const Color.fromARGB(255, 0, 69, 172).withOpacity(0.5),
 
                   spreadRadius: 2,
                   blurRadius: 3,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             ),
@@ -84,7 +82,7 @@ class FurnitureListView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(furniture.title, style: h4Style)
-                            .fadeAnimation(0.8),
+                            .fadeAnimation(0.1),
                         const SizedBox(height: 5),
                         //   _furnitureScore(furniture),
 
@@ -94,47 +92,47 @@ class FurnitureListView extends StatelessWidget {
                           style: h5Style.copyWith(fontSize: 12),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                        ).fadeAnimation(1.4),
+                        ).fadeAnimation(0.1),
                         Row(
                           children: [
                             Chip(
-                              avatar: Text("SAR",
+                              avatar: const Text("SAR",
                                   style: TextStyle(
                                     fontSize: 9.0,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
-                                    color: kPrimaryColor,
+                                    color: ButtonsColors,
                                   )),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                                side: BorderSide(
+                                side: const BorderSide(
                                   width: 2,
                                   color: kPrimaryColor,
                                 ),
                               ),
-                              backgroundColor: ButtonsColors,
+                              backgroundColor: kPrimaryColor,
                               padding: const EdgeInsets.all(4.0),
                               label: Text(
                                 furniture.price,
-                                style: TextStyle(
-                                  fontSize: 10.0,
+                                style: const TextStyle(
+                                  fontSize: 13.0,
                                   height: 1.4,
                                   fontWeight: FontWeight.bold,
-                                  color: kPrimaryColor,
+                                  color: ButtonsColors,
                                 ),
                               ),
                             ),
                             Expanded(
                                 child: Chip(
-                              avatar: Icon(
+                              avatar: const Icon(
                                 FontAwesomeIcons.locationDot,
                                 color: kPrimaryColor,
                                 size: 10,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                                side: BorderSide(
-                                  width: 2,
+                                side: const BorderSide(
+                                  width: 0,
                                   color: kPrimaryColor,
                                 ),
                               ),
@@ -142,8 +140,8 @@ class FurnitureListView extends StatelessWidget {
                               padding: const EdgeInsets.all(4.0),
                               label: Text(
                                 furniture.city,
-                                style: TextStyle(
-                                  fontSize: 10.0,
+                                style: const TextStyle(
+                                  fontSize: 13.0,
                                   height: 1.4,
                                   fontWeight: FontWeight.bold,
                                   color: kPrimaryColor,
@@ -168,75 +166,58 @@ class FurnitureListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isHorizontal == true
-        ? SizedBox(
-            height: 220,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: furnitureList.length,
-              itemBuilder: (_, index) {
-                Furniture furniture = furnitureList[index];
-                return _listViewItem(furniture, index);
+    return StreamBuilder(
+        stream: Mainstream(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              shrinkWrap: true,
+              reverse: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: snapshot.data?.docs.length,
+              itemBuilder: (context, index) {
+                if (snapshot.data!.docs.length > 0) {
+                  print("data is here");
+                  Furniture furniture = Furniture(
+                      id: snapshot.data!.docs[index].id,
+                      title: snapshot.data!.docs[index]['title'],
+                      description: snapshot.data!.docs[index]['description'],
+                      price: snapshot.data!.docs[index]['price'],
+                      city: snapshot.data!.docs[index]['city'],
+                      author: snapshot.data!.docs[index]['author'],
+                      images: [
+                        AppAsset.IMGtoJPG(
+                            snapshot.data!.docs[index]['category'])
+                      ],
+                      colors: <FurnitureColor>[
+                        FurnitureColor(
+                            color: const Color(0xFF616161), isSelected: true),
+                        FurnitureColor(color: const Color(0xFF424242)),
+                      ]);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 15, top: 10),
+                    child: _listViewItem(furniture, index),
+                  );
+                } else {
+                  print("no data avaliable");
+                  return Column(children: const [
+                    Text(
+                      "No Tasks Avaliable",
+                      style: TextStyle(fontSize: 35, color: Colors.blue),
+                    ),
+                  ]);
+                }
               },
-              separatorBuilder: (BuildContext context, int index) {
-                return const Padding(
-                  padding: EdgeInsets.only(left: 15),
-                );
-              },
-            ),
-          )
-        : StreamBuilder(
-            stream: Mainstream(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  reverse: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: snapshot.data?.docs.length,
-                  itemBuilder: (context, index) {
-                    if (snapshot.data!.docs.length > 0) {
-                      Furniture furniture = Furniture(
-                          id: snapshot.data!.docs[index].id,
-                          title: snapshot.data!.docs[index]['title'],
-                          description: snapshot.data!.docs[index]
-                              ['description'],
-                          price: snapshot.data!.docs[index]['price'],
-                          city: snapshot.data!.docs[index]['city'],
-                          author: snapshot.data!.docs[index]['author'],
-                          images: [
-                            AppAsset.IMGtoJPG(
-                                snapshot.data!.docs[index]['category'])
-                          ],
-                          colors: <FurnitureColor>[
-                            FurnitureColor(
-                                color: const Color(0xFF616161),
-                                isSelected: true),
-                            FurnitureColor(color: const Color(0xFF424242)),
-                          ]);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 15, top: 10),
-                        child: _listViewItem(furniture, index),
-                      );
-                    } else {
-                      return const Center(
-                          child: Text(
-                        "No Tasks in this Category",
-                        style: TextStyle(fontSize: 35, color: kPrimaryColor),
-                      ));
-                    }
-                  },
-                );
-              } else {
-                return LinearProgressIndicator(
-                  backgroundColor: kPrimaryColor,
-                );
-              }
-            });
+            );
+          } else {
+            return const LinearProgressIndicator(
+              backgroundColor: kPrimaryColor,
+            );
+          }
+        });
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>>? Mainstream() {
+  Stream<QuerySnapshot> Mainstream() {
     //gets all categories into a mainstream
     if (this.cat == null) {
       return FirebaseFirestore.instance.collection('tasks').snapshots();

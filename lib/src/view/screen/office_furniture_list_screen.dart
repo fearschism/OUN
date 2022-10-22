@@ -13,6 +13,7 @@ import '../../../core/app_style.dart';
 import '../../model/furniture.dart';
 import '../../view/screen/office_furniture_detail_screen.dart';
 import '../widget/furniture_list_view.dart';
+import 'package:skeletons/skeletons.dart';
 
 var username;
 TextEditingController searchC = TextEditingController();
@@ -58,18 +59,18 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
                         builder: ((context, snapshot) {
                           if (snapshot.connectionState !=
                               ConnectionState.done) {
-                            return const LinearProgressIndicator();
+                            return SkeletonListTile();
                           } else {
                             return Text(
                               "Hello, " +
                                   username.toString() +
-                                  " 💙"
-                                      "\n Welcome to Oun",
+                                  " 💙,"
+                                      " Welcome to Oun",
                               style: const TextStyle(
                                 fontFamily: 'Noto Sans CJK SC',
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
                                 fontSize: 20,
-                                color: Color.fromARGB(255, 114, 147, 244),
+                                color: kPrimaryColor,
                                 shadows: <Shadow>[
                                   Shadow(
                                     offset: Offset(5.0, 5.0),
@@ -91,6 +92,9 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
           ),
         ),
         _searchBar(context),
+        const SizedBox(
+          height: 4,
+        )
       ]),
       bottom: TabBar(
           isScrollable: true,
@@ -138,28 +142,37 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
 
   Widget _searchBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: TextField(
-        controller: searchC,
-        onEditingComplete: () {
-          if (searchC.toString() != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => searchScreen(
-                        searched: searchC.text,
-                      )),
-            );
-          }
-        },
-        decoration: InputDecoration(
-            hintText: 'Search for Tasks...',
-            prefixIcon: const Icon(Icons.search, color: Colors.black),
-            contentPadding: const EdgeInsets.all(20),
-            border: textFieldStyle,
-            focusedBorder: textFieldStyle),
-      ),
-    );
+        padding: const EdgeInsets.only(bottom: 20, top: 15),
+        child: Material(
+          elevation: 2.5,
+          shadowColor: kPrimaryColor,
+          child: TextField(
+            style: TextStyle(height: 1.4),
+            controller: searchC,
+            onEditingComplete: () {
+              if (searchC.toString() != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => searchScreen(
+                            searched: searchC.text,
+                          )),
+                );
+              }
+            },
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.all(8),
+              hintText: 'Search for Tasks...',
+              prefixIcon: const Icon(
+                Icons.search,
+                color: kPrimaryColor,
+                size: 20,
+              ),
+              border: textFieldStyle,
+            ),
+          ),
+        ));
   }
 
   @override
@@ -203,7 +216,6 @@ _fetchName() async {
 Widget getALL(dynamic Function(Furniture)? nav) {
   return ListView(children: [
     FurnitureListView(
-      furnitureList: AppData.furnitureList,
       isHorizontal: false,
       onTap: nav,
     )
@@ -213,7 +225,6 @@ Widget getALL(dynamic Function(Furniture)? nav) {
 Widget getByCategory(dynamic Function(Furniture)? nav, String cat) {
   return ListView(children: [
     FurnitureListView(
-      furnitureList: AppData.furnitureList,
       isHorizontal: false,
       onTap: nav,
       cat: cat,

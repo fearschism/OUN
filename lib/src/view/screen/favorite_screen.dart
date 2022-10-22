@@ -22,7 +22,6 @@ class FavoriteScreen extends StatelessWidget {
               controller.favoriteFurnitureList.isNotEmpty
                   ? FurnitureListView(
                       isHorizontal: false,
-                      furnitureList: controller.favoriteFurnitureList,
                     )
                   : const EmptyWidget(
                       type: EmptyWidgetType.favorite, title: "Empty")

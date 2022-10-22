@@ -6,6 +6,8 @@ import 'package:flutter_auth/src/view/screen/office_furniture_list_screen.dart';
 import '../../../constants.dart';
 import '../../../core/app_data.dart';
 import '../../../core/app_style.dart';
+import '../../model/furniture.dart';
+import 'office_furniture_detail_screen.dart';
 
 class searchScreen extends StatelessWidget {
   final String searched;
@@ -14,6 +16,12 @@ class searchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future _navigate(Furniture furniture) {
+      return Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return OfficeFurnitureDetailScreen(furniture: furniture);
+      }));
+    }
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -65,15 +73,19 @@ class searchScreen extends StatelessWidget {
             const SizedBox(
               height: defaultPadding,
             ),
-            Searched(
-              furnitureList: AppData.furnitureList,
-              isHorizontal: false,
-              searched: searched,
-              //onTap: _navigate,
-            ),
+            search_result(searched, _navigate),
           ],
         ),
       ),
     );
   }
+}
+
+Widget search_result(String s, dynamic Function(Furniture)? nav) {
+  return Searched(
+    furnitureList: AppData.furnitureList,
+    isHorizontal: false,
+    searched: s,
+    onTap: nav,
+  );
 }

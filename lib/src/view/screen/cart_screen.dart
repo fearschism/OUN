@@ -18,9 +18,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/app_style.dart';
+import 'office_furniture_detail_screen.dart';
 
 class ServiceRequestPageWidget extends StatefulWidget {
-  const ServiceRequestPageWidget({Key? key}) : super(key: key);
+  const ServiceRequestPageWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ServiceRequestPageWidgetState createState() =>
@@ -46,7 +49,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
           style: TextStyle(
             color: kPrimaryColor,
             fontSize: 25,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
             shadows: <Shadow>[
               Shadow(
                 offset: Offset(5.0, 5.0),
@@ -77,200 +80,114 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
       ),
       backgroundColor: kPrimaryLightColor,
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [const Spacer(), const Divider()],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: Color(0x4D757575),
-                          ),
-                        ),
-                        child: StreamBuilder(
-                            stream: FirebaseFirestore.instance
-                                .collection('tasks')
-                                .where('author',
-                                    isEqualTo:
-                                        FirebaseAuth.instance.currentUser!.uid)
-                                .snapshots(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.hasData) {
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  reverse: true,
-                                  physics: const ClampingScrollPhysics(),
-                                  itemCount: snapshot.data?.docs.length,
-                                  itemBuilder: (context, index) {
-                                    Furniture furniture = Furniture(
-                                        id: snapshot.data!.docs[index].id,
-                                        title: snapshot.data!.docs[index]
-                                            ['title'],
-                                        description: snapshot.data!.docs[index]
-                                            ['description'],
-                                        price: snapshot.data!.docs[index]
-                                            ['price'],
-                                        city: snapshot.data!.docs[index]
-                                            ['city'],
-                                        author: snapshot.data!.docs[index]
-                                            ['author'],
-                                        images: [
-                                          AppAsset.IMGtoJPG(snapshot
-                                              .data!.docs[index]['category'])
-                                        ],
-                                        colors: <FurnitureColor>[
-                                          FurnitureColor(
-                                              color: const Color(0xFF616161),
-                                              isSelected: true),
-                                          FurnitureColor(
-                                              color: const Color(0xFF424242)),
-                                        ]);
-                                    return _listViewItem(furniture, index);
-                                  },
-                                );
-                              } else {
-                                return CircularProgressIndicator(
-                                  color: kPrimaryColor,
-                                );
-                              }
-                            })
-                        /*  //future Row Parsing[Sprint 3].
-                      Row(
-              
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsetsDirectional.fromSTEB(16, 16, 0, 16),
-                            child: Container(
-                              width: 65,
-                              height: 65,
-                              decoration: BoxDecoration(
-                                color: KimberTheme.primaryColor,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: _furnitureImage(furniture.images[0])
-                                  ,
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(16, 0, 0, 0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0, 16, 16, 0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            furniture.title,
-                                            style:
-                                                KimberTheme.bodyText2.override(
-                                              fontFamily: 'NatoSansKhmer',
-                                              fontWeight: FontWeight.bold,
-                                              useGoogleFonts: false,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0, 2, 16, 0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          furniture.city,
-                                          style: KimberTheme.bodyText1.override(
-                                            fontFamily: 'NatoSansKhmer',
-                                            color: Color(0x80303030),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            useGoogleFonts: false,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      */
-                        ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        child: Column(mainAxisSize: MainAxisSize.max, children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [const Spacer(), const Divider()],
+          ),
+          Container(
+              child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('tasks')
+                      .where('author',
+                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        reverse: true,
+                        physics: const ClampingScrollPhysics(),
+                        itemCount: snapshot.data?.docs.length,
+                        itemBuilder: (context, index) {
+                          Furniture furniture = Furniture(
+                              id: snapshot.data!.docs[index].id,
+                              title: snapshot.data!.docs[index]['title'],
+                              description: snapshot.data!.docs[index]
+                                  ['description'],
+                              price: snapshot.data!.docs[index]['price'],
+                              city: snapshot.data!.docs[index]['city'],
+                              author: snapshot.data!.docs[index]['author'],
+                              images: [
+                                AppAsset.IMGtoJPG(
+                                    snapshot.data!.docs[index]['category'])
+                              ],
+                              colors: <FurnitureColor>[
+                                FurnitureColor(
+                                    color: const Color(0xFF616161),
+                                    isSelected: true),
+                                FurnitureColor(color: const Color(0xFF424242)),
+                              ]);
+                          return Padding(
+                              padding: EdgeInsets.all(10),
+                              child: _listViewItem(furniture, index, context));
+                        },
+                      );
+                    } else {
+                      return CircularProgressIndicator(
+                        color: kPrimaryColor,
+                      );
+                    }
+                  })),
+        ]),
       ),
     );
   }
 
-  Widget _listViewItem(Furniture furniture, int index) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _furnitureImage(furniture.images[0]),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(furniture.title, style: h4Style).fadeAnimation(0.8),
-                const SizedBox(height: 5),
-                //   _furnitureScore(furniture),
-                Text(furniture.city),
-                const SizedBox(height: 5),
-                Text(
-                  furniture.description,
-                  style: h5Style.copyWith(fontSize: 12),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ).fadeAnimation(1.4),
-              ],
+  Widget _listViewItem(Furniture furniture, int index, BuildContext context) {
+    Future _navigate(Furniture furniture) {
+      return Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return OfficeFurnitureDetailScreen(furniture: furniture);
+      }));
+    }
+
+    Widget widget = Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromARGB(255, 0, 69, 172).withOpacity(0.5),
+
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: Offset(0, 2), // changes position of shadow
             ),
-          ),
+          ],
         ),
-      ],
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _furnitureImage(furniture.images[0]),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(furniture.title, style: h4Style).fadeAnimation(0.8),
+                    const SizedBox(height: 2),
+                    //   _furnitureScore(furniture),
+                    Text(furniture.city),
+                    const SizedBox(height: 3),
+                    Text(
+                      furniture.description,
+                      style: h5Style.copyWith(fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ).fadeAnimation(1.4),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
+    return GestureDetector(
+      onTap: () {
+        _navigate(furniture);
+      },
+      child: widget,
     );
   }
 
@@ -279,8 +196,8 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
       borderRadius: BorderRadius.circular(15.0),
       child: Image.asset(
         image,
-        width: 150,
-        height: 150,
+        width: 100,
+        height: 100,
       ),
     ).fadeAnimation(0.4);
   }

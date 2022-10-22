@@ -10,6 +10,7 @@ import '../../../core/app_extension.dart';
 import '../../view/widget/rating_bar.dart';
 import '../../../core/app_style.dart';
 import '../../model/furniture.dart';
+import 'office_furniture_detail_screen.dart';
 
 class Searched extends StatelessWidget {
   final bool isHorizontal;
@@ -40,56 +41,54 @@ class Searched extends StatelessWidget {
       borderRadius: BorderRadius.circular(15.0),
       child: Image.asset(
         image,
-        width: 150,
-        height: 150,
+        width: 100,
+        height: 100,
       ),
     ).fadeAnimation(0.4);
   }
 
   Widget _listViewItem(Furniture furniture, int index) {
-    Widget widget;
-    widget = isHorizontal == true
-        ? Column(
-            children: [
-              Hero(tag: index, child: _furnitureImage(furniture.images[0])),
-              const SizedBox(height: 10),
-              Text(furniture.title.addOverFlow, style: h4Style)
-                  .fadeAnimation(0.8),
-              //_furnitureScore(furniture),
-              Text(furniture.city),
-              Text(furniture.price)
-            ],
-          )
-        : Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _furnitureImage(furniture.images[0]),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(furniture.title, style: h4Style).fadeAnimation(0.8),
-                      const SizedBox(height: 5),
-                      //   _furnitureScore(furniture),
-                      Text(furniture.city),
-                      const SizedBox(height: 5),
-                      Text(
-                        furniture.description,
-                        style: h5Style.copyWith(fontSize: 12),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ).fadeAnimation(1.4),
-                      const SizedBox(height: 5),
-                      Text(furniture.price)
-                    ],
-                  ),
+    Widget widget = Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromARGB(255, 0, 69, 172).withOpacity(0.5),
+
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _furnitureImage(furniture.images[0]),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(furniture.title, style: h4Style).fadeAnimation(0.8),
+                    const SizedBox(height: 2),
+                    //   _furnitureScore(furniture),
+                    Text(furniture.city),
+                    const SizedBox(height: 3),
+                    Text(
+                      furniture.description,
+                      style: h5Style.copyWith(fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ).fadeAnimation(1.4),
+                  ],
                 ),
               ),
-            ],
-          );
-
+            ),
+          ],
+        ));
     return GestureDetector(
       onTap: () => onTap?.call(furniture),
       child: widget,
@@ -112,9 +111,12 @@ class Searched extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (_, index) {
+                      //searching Algorithm search if title contains word or desc contains word
                       String pat = r'\b' + searched.trim() + r'\b';
                       RegExp reg = RegExp(pat, caseSensitive: false);
-                      if (reg.hasMatch(snapshot.data!.docs[index]['title'])) {
+                      if (reg.hasMatch(snapshot.data!.docs[index]['title']) ||
+                          reg.hasMatch(
+                              snapshot.data!.docs[index]['description'])) {
                         Furniture furniture = Furniture(
                             id: snapshot.data!.docs[index].id,
                             author: snapshot.data!.docs[index]['author'],
@@ -133,7 +135,9 @@ class Searched extends StatelessWidget {
                                   isSelected: true),
                               FurnitureColor(color: const Color(0xFF424242)),
                             ]);
-                        return _listViewItem(furniture, index);
+                        return Padding(
+                            padding: EdgeInsets.all(10),
+                            child: _listViewItem(furniture, index));
                       } else
                         return SizedBox.shrink();
                     },

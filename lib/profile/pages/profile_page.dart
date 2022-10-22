@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/Screens/Login/login_screen.dart';
 import 'package:flutter_auth/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/constants.dart';
+import 'package:skeletons/skeletons.dart';
 import './edit_description.dart';
 import './edit_email.dart';
 import './edit_image.dart';
@@ -25,7 +26,14 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
+late Future _get;
+
 class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,9 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _fetch(),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator(
-                  backgroundColor: kPrimaryColor,
-                );
+                return SkeletonListTile();
               } else {
                 return buildUserInfoDisplay(
                     FetchName, 'Name', EditNameFormPage());
@@ -81,9 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _fetch(),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator(
-                  backgroundColor: kPrimaryColor,
-                );
+                return SkeletonListTile();
               } else {
                 return buildUserInfoDisplay(
                     FetchPhone, 'Phone', EditPhoneFormPage());
@@ -94,9 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
             future: _fetch(),
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return CircularProgressIndicator(
-                  backgroundColor: kPrimaryColor,
-                );
+                return SkeletonListTile();
               } else {
                 return buildUserInfoDisplay(
                     FetchEmail, 'Email', EditEmailFormPage());
