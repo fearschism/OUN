@@ -10,7 +10,7 @@ import 'package:flutter_auth/src/view/screen/home_screen.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:simple_animations/simple_animations.dart';
-
+import 'package:buttons_tabbar/buttons_tabbar.dart';
 import '../../../common/kimber_theme.dart';
 import '../../../common/kimber_util.dart';
 import '../../../common/kimber_widgets.dart';
@@ -36,103 +36,199 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
   void test() {}
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: kPrimaryLightColor,
-        automaticallyImplyLeading: false,
-        actions: [],
-        centerTitle: true,
-        elevation: 1,
-        title: Text(
-          'Tasks',
-          style: TextStyle(
-            color: kPrimaryColor,
-            fontSize: 25,
-            fontWeight: FontWeight.w900,
-            shadows: <Shadow>[
-              Shadow(
-                offset: Offset(5.0, 5.0),
-                blurRadius: 2.0,
-                color: ButtonsColors,
+    return DefaultTabController(
+        
+        length: 2,
+        child: Scaffold(
+          key: scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: kPrimaryLightColor,
+            automaticallyImplyLeading: false,
+            actions: [],
+            centerTitle: true,
+            elevation: 1,
+            title: Text(
+              'Tasks',
+              style: TextStyle(
+                color: kPrimaryColor,
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(5.0, 5.0),
+                    blurRadius: 2.0,
+                    color: ButtonsColors,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AddTask();
-              },
             ),
-          );
-        },
-        backgroundColor: ButtonsColors,
-        icon: const Icon(
-          Icons.add,
-          color: Colors.black,
-        ),
-        label: const Text("Add Task", style: TextStyle(color: Colors.black)),
-      ),
-      backgroundColor: kPrimaryLightColor,
-      body: SingleChildScrollView(
-        child: Column(mainAxisSize: MainAxisSize.max, children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [const Spacer(), const Divider()],
+            bottom: const TabBar(
+              tabs: [
+                Tab(
+                  child: Text('MyTasks',style: TextStyle(
+                color: kPrimaryColor,
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(5.0, 5.0),
+                    blurRadius: 2.0,
+                    color: ButtonsColors,
+                  ),
+                ],
+              ),),
+                  
+                ),
+                Tab(
+                   child: Text('MyOffers',style: TextStyle(
+                color: kPrimaryColor,
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(5.0, 5.0),
+                    blurRadius: 2.0,
+                    color: ButtonsColors,
+                  ),
+                ],
+              ),),
+                )
+              ],
+            ),
           ),
-          Container(
-              child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('tasks')
-                      .where('author',
-                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        reverse: true,
-                        physics: const ClampingScrollPhysics(),
-                        itemCount: snapshot.data?.docs.length,
-                        itemBuilder: (context, index) {
-                          Furniture furniture = Furniture(
-                              id: snapshot.data!.docs[index].id,
-                              title: snapshot.data!.docs[index]['title'],
-                              description: snapshot.data!.docs[index]
-                                  ['description'],
-                              price: snapshot.data!.docs[index]['price'],
-                              city: snapshot.data!.docs[index]['city'],
-                              author: snapshot.data!.docs[index]['author'],
-                              images: [
-                                AppAsset.IMGtoJPG(
-                                    snapshot.data!.docs[index]['category'])
-                              ],
-                              colors: <FurnitureColor>[
-                                FurnitureColor(
-                                    color: const Color(0xFF616161),
-                                    isSelected: true),
-                                FurnitureColor(color: const Color(0xFF424242)),
-                              ]);
-                          return Padding(
-                              padding: EdgeInsets.all(10),
-                              child: _listViewItem(furniture, index, context));
-                        },
-                      );
-                    } else {
-                      return CircularProgressIndicator(
-                        color: kPrimaryColor,
-                      );
-                    }
-                  })),
-        ]),
-      ),
-    );
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AddTask();
+                  },
+                ),
+              );
+            },
+            backgroundColor: ButtonsColors,
+            icon: const Icon(
+              Icons.add,
+              color: Colors.black,
+            ),
+            label:
+                const Text("Add Task", style: TextStyle(color: Colors.black)),
+          ),
+          backgroundColor: kPrimaryLightColor,
+          body: 
+              TabBarView(children: [ SingleChildScrollView( child:
+            Column(mainAxisSize: MainAxisSize.max, children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [const Spacer(), const Divider()],
+              ),
+              Container(
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('tasks')
+                          .where('author',
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            reverse: true,
+                            physics: const ClampingScrollPhysics(),
+                            itemCount: snapshot.data?.docs.length,
+                            itemBuilder: (context, index) {
+                              Furniture furniture = Furniture(
+                                  id: snapshot.data!.docs[index].id,
+                                  title: snapshot.data!.docs[index]['title'],
+                                  description: snapshot.data!.docs[index]
+                                      ['description'],
+                                  price: snapshot.data!.docs[index]['price'],
+                                  city: snapshot.data!.docs[index]['city'],
+                                  author: snapshot.data!.docs[index]['author'],
+                                  images: [
+                                    AppAsset.IMGtoJPG(
+                                        snapshot.data!.docs[index]['category'])
+                                  ],
+                                  colors: <FurnitureColor>[
+                                    FurnitureColor(
+                                        color: const Color(0xFF616161),
+                                        isSelected: true),
+                                    FurnitureColor(
+                                        color: const Color(0xFF424242)),
+                                  ]);
+                              return Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child:
+                                      _listViewItem(furniture, index, context));
+                            },
+                          );
+                        } else {
+                          return CircularProgressIndicator(
+                            color: kPrimaryColor,
+                          );
+                        }
+                      })),
+            ])),
+            // for the offer page (needs backend modification)-------------------------------------------------------------------------
+            SingleChildScrollView( child:
+            Column(mainAxisSize: MainAxisSize.max, children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [const Spacer(), const Divider()],
+              ),
+              Container(
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('tasks')
+                          .where('author',
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            reverse: true,
+                            physics: const ClampingScrollPhysics(),
+                            itemCount: snapshot.data?.docs.length,
+                            itemBuilder: (context, index) {
+                              Furniture furniture = Furniture(
+                                  id: snapshot.data!.docs[index].id,
+                                  title: snapshot.data!.docs[index]['title'],
+                                  description: snapshot.data!.docs[index]
+                                      ['description'],
+                                  price: snapshot.data!.docs[index]['price'],
+                                  city: snapshot.data!.docs[index]['city'],
+                                  author: snapshot.data!.docs[index]['author'],
+                                  images: [
+                                    AppAsset.IMGtoJPG(
+                                        snapshot.data!.docs[index]['category'])
+                                  ],
+                                  colors: <FurnitureColor>[
+                                    FurnitureColor(
+                                        color: const Color(0xFF616161),
+                                        isSelected: true),
+                                    FurnitureColor(
+                                        color: const Color(0xFF424242)),
+                                  ]);
+                              return Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child:
+                                      _listViewItem(furniture, index, context));
+                            },
+                          );
+                        } else {
+                          return CircularProgressIndicator(
+                            color: kPrimaryColor,
+                          );
+                        }
+                      })),
+            ])),
+          //---------------------------------------------------------------------------------------------------------------------------
+      ])),
+        );
   }
 
   Widget _listViewItem(Furniture furniture, int index, BuildContext context) {

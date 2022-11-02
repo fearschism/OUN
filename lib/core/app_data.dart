@@ -54,7 +54,7 @@ class AppData {
 
   static List<BottomNavigationItem> bottomNavigationItems = [
     BottomNavigationItem(const Icon(Icons.home), 'Home'),
-    BottomNavigationItem(const Icon(Icons.task), 'My Tasks'),
+    BottomNavigationItem(const Icon(Icons.task), 'Tasks'),
     BottomNavigationItem(const Icon(Icons.person), 'Profile')
   ];
 }
