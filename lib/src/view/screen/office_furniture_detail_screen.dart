@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/constants.dart';
+import 'package:flutter_auth/src/view/widget/empty_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../../core/app_color.dart';
@@ -15,11 +16,14 @@ import '../../view/widget/counter_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../model/furniture.dart';
 import '../widget/color_picker.dart';
+import '../widget/furniture_list_view.dart';
 import '../widget/rating_bar.dart';
 import 'home_screen.dart';
 
 var CategorySelected;
 final GlobalKey<FormState> _keyVal = GlobalKey<FormState>();
+final GlobalKey<FormState> _keyPal = GlobalKey<FormState>();
+final TextEditingController textcon = TextEditingController();
 
 class OfficeFurnitureDetailScreen extends StatefulWidget {
   final Furniture furniture;
@@ -71,7 +75,6 @@ class _OfficeFurnitureDetailScreenState
                 if (widget.furniture.author !=
                     FirebaseAuth.instance.currentUser!.uid) {
                   if (await noReported()) {
-                    // bool didReport = FirebaseFirestore.instance.collection('violations')
                     AwesomeDialog(
                             context: context,
                             dialogType: DialogType.question,
@@ -208,7 +211,7 @@ class _OfficeFurnitureDetailScreenState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(
                 child: Text('Price',
@@ -250,7 +253,7 @@ class _OfficeFurnitureDetailScreenState
         appBar: _appBar(context),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -395,6 +398,24 @@ class _OfficeFurnitureDetailScreenState
                       ),
                       child: ElevatedButton.icon(
                           onPressed: () {
+                            //future<bool> hasoffered() TODO:
+                            /*
+                                              AwesomeDialog(
+                                                      context: context,
+                                                      dialogType:
+                                                          DialogType.error,
+                                                      animType:
+                                                          AnimType.rightSlide,
+                                                      headerAnimationLoop:
+                                                          false,
+                                                      autoHide: const Duration(
+                                                          seconds: 3),
+                                                      title: "An Error Occured",
+                                                      desc:
+                                                          "You have Already Offered!")
+                                                  .show();
+                                                  error message for an Already offered! user
+                                                  */
                             if (widget.furniture.author ==
                                 FirebaseAuth.instance.currentUser!.uid) {
                               AwesomeDialog(
@@ -413,57 +434,109 @@ class _OfficeFurnitureDetailScreenState
                                 animType: AnimType.rightSlide,
                                 showCloseIcon: true,
                                 body: Form(
+                                    key: _keyPal,
                                     child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
                                       children: [
-                                        const Padding(
-                                          padding: EdgeInsets.only(bottom: 25),
-                                          child: Text(
-                                            "ADD AN OFFER",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                              color: Color.fromARGB(
-                                                  255, 114, 147, 244),
-                                              shadows: <Shadow>[
-                                                Shadow(
-                                                  offset: Offset(5.0, 5.0),
-                                                  blurRadius: 2.0,
-                                                  color: ButtonsColors,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 25),
+                                              child: Text(
+                                                "ADD AN OFFER",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20,
+                                                  color: Color.fromARGB(
+                                                      255, 114, 147, 244),
+                                                  shadows: <Shadow>[
+                                                    Shadow(
+                                                      offset: Offset(5.0, 5.0),
+                                                      blurRadius: 2.0,
+                                                      color: ButtonsColors,
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 10, right: 25, bottom: 25),
+                                          child: TextFormField(
+                                            validator: ((value) {
+                                              String pat =
+                                                  r'(10[0-9]|1[1-9]\d|[2-9]\d\d|[1-9]\d\d\d|[1-9]\d\d\d\d|[5-9]\d)$';
+                                              RegExp reg =
+                                                  RegExp(pat); //not finished...
+                                              if (value!.isEmpty) {
+                                                return 'Price cannot be Empty!';
+                                              } else if (!reg.hasMatch(value))
+                                                return "between 50-99999 only'";
+                                              else {
+                                                return null;
+                                              }
+                                            }),
+                                            controller: textcon,
+                                            decoration: const InputDecoration(
+                                              prefixIcon: Icon(
+                                                  FontAwesomeIcons.moneyBill),
+                                              hintText:
+                                                  "Enter your Offer Price",
                                             ),
                                           ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton.icon(
+                                              onPressed: (() {
+                                                if (_keyPal.currentState!
+                                                    .validate()) {
+                                                  FirebaseFirestore.instance
+                                                      .collection("offers")
+                                                      .add({
+                                                    'task': widget.furniture.id,
+                                                    'Provider': FirebaseAuth
+                                                        .instance
+                                                        .currentUser!
+                                                        .uid,
+                                                    'task-owner':
+                                                        widget.furniture.author,
+                                                    'price': textcon.text,
+                                                  }).whenComplete(() => AwesomeDialog(
+                                                              context: context,
+                                                              dialogType:
+                                                                  DialogType
+                                                                      .success,
+                                                              animType: AnimType
+                                                                  .rightSlide,
+                                                              headerAnimationLoop:
+                                                                  false,
+                                                              autoHide:
+                                                                  const Duration(
+                                                                      seconds:
+                                                                          2),
+                                                              title:
+                                                                  "OFFER SENT 😄",
+                                                              desc:
+                                                                  "Your offer is sent!, Thanks for Offering! 🥰")
+                                                          .show());
+                                                } else {
+                                                  print("Not validated");
+                                                }
+                                              }), //OnPressed Logic OFFER[saad]
+                                              icon: Icon(Icons.add),
+                                              label: const Text("ADD"),
+                                            ),
+                                          ],
                                         )
                                       ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10, right: 25, bottom: 25),
-                                      child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          prefixIcon:
-                                              Icon(FontAwesomeIcons.moneyBill),
-                                          hintText: "Enter your Offer Price",
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        TextButton.icon(
-                                          onPressed:
-                                              (() {}), //OnPressed Logic OFFER[saad]
-                                          icon: Icon(Icons.add),
-                                          label: const Text("ADD"),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                )),
+                                    )),
                               ).show();
                             }
                           },
@@ -472,40 +545,56 @@ class _OfficeFurnitureDetailScreenState
                     ))
                   ],
                 ).fadeAnimation(1.0),
-                Row(children: <Widget>[
-                  Expanded(
-                    child: new Container(
-                        margin: const EdgeInsets.only(left: 10.0, right: 20.0),
-                        child: const Divider(
-                          color: Colors.black,
-                          height: 36,
-                        )),
-                  ),
-                  const Text(
-                    "OFFERS",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Color.fromARGB(255, 114, 147, 244),
-                      shadows: <Shadow>[
-                        Shadow(
-                          offset: Offset(5.0, 5.0),
-                          blurRadius: 2.0,
-                          color: ButtonsColors,
-                        ),
-                      ],
+                if (FirebaseAuth.instance.currentUser!.uid ==
+                    widget.furniture.author) ...[
+                  Row(children: <Widget>[
+                    Expanded(
+                      child: new Container(
+                          margin:
+                              const EdgeInsets.only(left: 10.0, right: 20.0),
+                          child: const Divider(
+                            color: Colors.black,
+                            height: 36,
+                          )),
                     ),
-                  ),
-                  Expanded(
-                    child: new Container(
-                        margin: const EdgeInsets.only(left: 20.0, right: 10.0),
-                        child: const Divider(
-                          color: Colors.black,
-                          height: 36,
-                        )),
-                  ),
-                ]),
+                    const Text(
+                      "OFFERS",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Color.fromARGB(255, 114, 147, 244),
+                        shadows: <Shadow>[
+                          Shadow(
+                            offset: Offset(5.0, 5.0),
+                            blurRadius: 2.0,
+                            color: ButtonsColors,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: new Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, right: 10.0),
+                          child: const Divider(
+                            color: Colors.black,
+                            height: 36,
+                          )),
+                    ),
+                  ]),
+                  SizedBox(
+                    height: height,
+                    child: ListView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [GetOffers()],
+                    ),
+                  )
+                ],
+
+                // GetOffers(),
               ],
+              //TODO: A Listview of Offers
+              //TODo
             ),
           ),
         ),
@@ -521,5 +610,14 @@ class _OfficeFurnitureDetailScreenState
         .then((ud) {
       username = ud.get('name').toString();
     });
+  }
+
+  Widget GetOffers() {
+    if (FirebaseAuth.instance.currentUser!.uid == widget.furniture.author) {
+      //returns offers with accept or deny button, because the owner of the task is the current user of the program.
+      return FurnitureListView(isHorizontal: true, cat: "a", offer: true);
+    } else {
+      return Text("");
+    }
   }
 }

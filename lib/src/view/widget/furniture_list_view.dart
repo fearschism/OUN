@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,12 +16,14 @@ class FurnitureListView extends StatelessWidget {
   final bool isHorizontal;
   final Function(Furniture furniture)? onTap;
   final String? cat;
+  final bool? offer;
 
   const FurnitureListView({
     Key? key,
     this.isHorizontal = true,
     this.onTap,
     this.cat,
+    this.offer,
   }) : super(key: key);
 
   /*Widget _furnitureScore(Furniture furniture) {
@@ -47,15 +50,119 @@ class FurnitureListView extends StatelessWidget {
   Widget _listViewItem(Furniture furniture, int index) {
     Widget widget;
     widget = isHorizontal == true
-        ? Column(
-            children: [
-              Hero(tag: index, child: _furnitureImage(furniture.images[0])),
-              const SizedBox(height: 10),
-              Text(furniture.title.addOverFlow, style: h4Style)
-                  .fadeAnimation(0.1),
-              //_furnitureScore(furniture),
-              Text(furniture.city),
-            ],
+        ? Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 0, 69, 172).withOpacity(0.5),
+
+                  spreadRadius: 2,
+                  blurRadius: 3,
+                  offset: const Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(furniture.title, style: h4Style)
+                            .fadeAnimation(0.1),
+                        const SizedBox(height: 5),
+                        //   _furnitureScore(furniture),
+
+                        Row(
+                          children: [
+                            Chip(
+                              avatar: const Text("SAR",
+                                  style: TextStyle(
+                                    fontSize: 9.0,
+                                    height: 1,
+                                    fontWeight: FontWeight.bold,
+                                    color: ButtonsColors,
+                                  )),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                side: const BorderSide(
+                                  width: 1,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                              backgroundColor: kPrimaryColor,
+                              padding: const EdgeInsets.all(4.0),
+                              label: Text(
+                                furniture.price,
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  height: 1.4,
+                                  fontWeight: FontWeight.bold,
+                                  color: ButtonsColors,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 145,
+                            ),
+                            Row(
+                              children: [
+                                TextButton.icon(
+                                    onPressed: () {
+                                      print("Check");
+                                    },
+                                    icon: Icon(
+                                      FontAwesomeIcons.check,
+                                      color: Colors.white,
+                                    ),
+                                    label: Text(
+                                      "Accept",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll<Color>(
+                                                Colors.green),
+                                        shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(18.0),
+                                                side: BorderSide(
+                                                    width: 2,
+                                                    color: Colors.green))))),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    print("X");
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.x,
+                                    color: Colors.red,
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStatePropertyAll<Color>(
+                                            Colors.red),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ), //your widget here
           )
         : Container(
             decoration: BoxDecoration(
@@ -173,7 +280,7 @@ class FurnitureListView extends StatelessWidget {
             return ListView.builder(
               shrinkWrap: true,
               reverse: true,
-              physics: const ClampingScrollPhysics(),
+              physics: const PageScrollPhysics(),
               itemCount: snapshot.data?.docs.length,
               itemBuilder: (context, index) {
                 if (snapshot.data!.docs.length > 0) {
@@ -222,6 +329,11 @@ class FurnitureListView extends StatelessWidget {
     if (this.cat == null) {
       return FirebaseFirestore.instance.collection('tasks').snapshots();
       //What Category  (cat) is it? will return the list with the category = Cat.trim() O(1) O(n+3)
+    } else if (offer == true) {
+      return FirebaseFirestore.instance
+          .collection('tasks')
+          .where('price', isEqualTo: '100')
+          .snapshots();
     } else {
       return FirebaseFirestore.instance
           .collection('tasks')
