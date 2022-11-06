@@ -115,7 +115,7 @@ class _AddTaskState extends State<AddTask> {
                     return null;
                   }
                 }),
-                autofocus: true,
+                autofocus: false,
                 autocorrect: false,
                 keyboardType: TextInputType.multiline,
                 minLines: 1,
@@ -193,28 +193,6 @@ class _AddTaskState extends State<AddTask> {
               const SizedBox(
                 height: defaultPadding,
               ),
-              TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  controller: MoneyCo,
-                  maxLength: 5,
-                  validator: ((value) {
-                    String pat =
-                        r'(10[0-9]|1[1-9]\d|[2-9]\d\d|[1-9]\d\d\d|[1-9]\d\d\d\d|[5-9]\d)$';
-                    RegExp reg = RegExp(pat); //not finished...
-                    if (value!.isEmpty) {
-                      return 'Enter The Maximum Amount Of Money You Can Pay... between 50-99999';
-                    } else if (!reg.hasMatch(value))
-                      return "Price must be(50-99999) Riyals";
-                    else {
-                      return null;
-                    }
-                  }),
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.money),
-                      prefixIconColor: Colors.white70,
-                      fillColor: kPrimaryLightColor,
-                      border: textFieldStyle,
-                      hintText: "The Maximum Amount Of Money You Can Pay...")),
               Spacer(),
               Center(
                   child: Padding(
@@ -278,8 +256,7 @@ SendNewTask(BuildContext context, String city, String Categ) async {
         'title': TitleCo.text,
         'description': DescCo.text,
         'city': city,
-        'category': Categ,
-        'price': MoneyCo.text
+        'category': Categ
       })
       .then((value) => null)
       .onError((error, stackTrace) => showDialog(
@@ -293,14 +270,19 @@ SendNewTask(BuildContext context, String city, String Categ) async {
                 context: context,
                 dialogType: DialogType.success,
                 animType: AnimType.rightSlide,
+                keyboardAware: true,
+                dismissOnBackKeyPress: false,
+                dismissOnTouchOutside: false,
                 headerAnimationLoop: false,
+                autoHide: Duration(seconds: 2),
                 title: 'Task Added',
                 btnOkOnPress: () {
                   TitleCo.clear();
                   DescCo.clear();
-                  MoneyCo.clear();
+                  Navigator.pop(context);
                 },
                 btnOkIcon: FontAwesomeIcons.check)
             .show();
+        //
       });
 }

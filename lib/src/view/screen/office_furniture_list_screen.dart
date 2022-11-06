@@ -67,9 +67,10 @@ class _OfficeFurnitureListScreenState extends State<OfficeFurnitureListScreen>
                                   " 💙,"
                                       " Welcome to Oun",
                               style: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
                                 fontFamily: 'Noto Sans CJK SC',
                                 fontWeight: FontWeight.w900,
-                                fontSize: 20,
+                                fontSize: 16,
                                 color: kPrimaryColor,
                                 shadows: <Shadow>[
                                   Shadow(

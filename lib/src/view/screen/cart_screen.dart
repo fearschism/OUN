@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_auth/constants.dart';
@@ -7,7 +10,9 @@ import 'package:flutter_auth/src/model/furniture.dart';
 import 'package:flutter_auth/src/model/furniture_color.dart';
 import 'package:flutter_auth/src/view/screen/NewTask.dart';
 import 'package:flutter_auth/src/view/screen/home_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
@@ -18,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/app_style.dart';
+import 'notification_screen.dart';
 import 'office_furniture_detail_screen.dart';
 
 class ServiceRequestPageWidget extends StatefulWidget {
@@ -37,14 +43,100 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        
-        length: 2,
-        child: Scaffold(
+      length: 2,
+      child: Scaffold(
           key: scaffoldKey,
           appBar: AppBar(
             backgroundColor: kPrimaryLightColor,
             automaticallyImplyLeading: false,
-            actions: [],
+            actions: [
+              StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("notifs")
+                      .where("user",
+                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                      .snapshots(),
+                  builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState != ConnectionState.waiting) {
+                      if (snapshot.hasData) {
+                        var count = 0;
+                        for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                          if (snapshot.data!.docs[i]["new"] == true) {
+                            count++;
+                          }
+                        }
+                        print(count);
+                        if (count == 0) {
+                          //return icon without notification
+                          return IconButton(
+                              onPressed: (() {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => notification()),
+                                );
+                              }),
+                              icon: Icon(
+                                Icons.notifications_none,
+                                color: kPrimaryColor,
+                                size: 35,
+                              ));
+                        } else if (count > 0) {
+                          //return icon with notification with the count.
+                          return Badge(
+                              position: BadgePosition.topEnd(top: 2, end: 2),
+                              badgeContent: Text(
+                                count.toString(),
+                                style: (TextStyle(color: Colors.white)),
+                              ),
+                              child: IconButton(
+                                  onPressed: (() {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => notification()),
+                                    );
+                                  }),
+                                  icon: Icon(
+                                    Icons.notifications_none,
+                                    color: kPrimaryColor,
+                                    size: 35,
+                                  )));
+                        } else {
+                          return IconButton(
+                              onPressed: (() {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => notification()),
+                                );
+                              }),
+                              icon: Icon(
+                                Icons.notifications_none,
+                                color: kPrimaryColor,
+                                size: 35,
+                              ));
+                        }
+                      } else {
+                        return IconButton(
+                            onPressed: (() {}),
+                            icon: Icon(Icons.notifications_sharp));
+                      }
+                      //return icon without notification.
+                    } else {
+                      print(snapshot.connectionState);
+                      return IconButton(
+                          onPressed: (() {}),
+                          icon: Icon(
+                            Icons.notifications_sharp,
+                            color: Colors.red,
+                          ));
+                    }
+                  })),
+              SizedBox(
+                width: 30,
+              )
+            ],
             centerTitle: true,
             elevation: 1,
             title: Text(
@@ -65,33 +157,38 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
             bottom: const TabBar(
               tabs: [
                 Tab(
-                  child: Text('MyTasks',style: TextStyle(
-                color: kPrimaryColor,
-                fontSize: 25,
-                fontWeight: FontWeight.w900,
-                shadows: <Shadow>[
-                  Shadow(
-                    offset: Offset(5.0, 5.0),
-                    blurRadius: 2.0,
-                    color: ButtonsColors,
+                  child: Text(
+                    'MyTasks',
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      shadows: <Shadow>[
+                        Shadow(
+                          offset: Offset(5.0, 5.0),
+                          blurRadius: 2.0,
+                          color: ButtonsColors,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),),
-                  
                 ),
                 Tab(
-                   child: Text('MyOffers',style: TextStyle(
-                color: kPrimaryColor,
-                fontSize: 25,
-                fontWeight: FontWeight.w900,
-                shadows: <Shadow>[
-                  Shadow(
-                    offset: Offset(5.0, 5.0),
-                    blurRadius: 2.0,
-                    color: ButtonsColors,
+                  child: Text(
+                    'MyOffers',
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      shadows: <Shadow>[
+                        Shadow(
+                          offset: Offset(5.0, 5.0),
+                          blurRadius: 2.0,
+                          color: ButtonsColors,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),),
                 )
               ],
             ),
@@ -116,9 +213,9 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                 const Text("Add Task", style: TextStyle(color: Colors.black)),
           ),
           backgroundColor: kPrimaryLightColor,
-          body: 
-              TabBarView(children: [ SingleChildScrollView( child:
-            Column(mainAxisSize: MainAxisSize.max, children: [
+          body: TabBarView(children: [
+            SingleChildScrollView(
+                child: Column(mainAxisSize: MainAxisSize.max, children: [
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [const Spacer(), const Divider()],
@@ -144,7 +241,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                                   title: snapshot.data!.docs[index]['title'],
                                   description: snapshot.data!.docs[index]
                                       ['description'],
-                                  price: snapshot.data!.docs[index]['price'],
+                                  price: "",
                                   city: snapshot.data!.docs[index]['city'],
                                   author: snapshot.data!.docs[index]['author'],
                                   images: [
@@ -160,8 +257,14 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                                   ]);
                               return Padding(
                                   padding: EdgeInsets.all(10),
-                                  child:
-                                      _listViewItem(furniture, index, context));
+                                  child: _listViewItem(
+                                      furniture,
+                                      index,
+                                      context,
+                                      snapshot.data!.docs[index]['author']
+                                          .toString(),
+                                      snapshot.data!.docs[index].id
+                                          .toString()));
                             },
                           );
                         } else {
@@ -172,8 +275,8 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                       })),
             ])),
             // for the offer page (needs backend modification)-------------------------------------------------------------------------
-            SingleChildScrollView( child:
-            Column(mainAxisSize: MainAxisSize.max, children: [
+            SingleChildScrollView(
+                child: Column(mainAxisSize: MainAxisSize.max, children: [
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [const Spacer(), const Divider()],
@@ -181,57 +284,69 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
               Container(
                   child: StreamBuilder(
                       stream: FirebaseFirestore.instance
-                          .collection('tasks')
-                          .where('author',
+                          .collection('offers')
+                          .where('Provider',
                               isEqualTo: FirebaseAuth.instance.currentUser!.uid)
                           .snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasData) {
+                        if (snapshot.data!.docs.length != 0) {
                           return ListView.builder(
                             shrinkWrap: true,
                             reverse: true,
                             physics: const ClampingScrollPhysics(),
                             itemCount: snapshot.data?.docs.length,
                             itemBuilder: (context, index) {
-                              Furniture furniture = Furniture(
-                                  id: snapshot.data!.docs[index].id,
-                                  title: snapshot.data!.docs[index]['title'],
-                                  description: snapshot.data!.docs[index]
-                                      ['description'],
-                                  price: snapshot.data!.docs[index]['price'],
-                                  city: snapshot.data!.docs[index]['city'],
-                                  author: snapshot.data!.docs[index]['author'],
-                                  images: [
-                                    AppAsset.IMGtoJPG(
-                                        snapshot.data!.docs[index]['category'])
-                                  ],
-                                  colors: <FurnitureColor>[
-                                    FurnitureColor(
-                                        color: const Color(0xFF616161),
-                                        isSelected: true),
-                                    FurnitureColor(
-                                        color: const Color(0xFF424242)),
-                                  ]);
-                              return Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child:
-                                      _listViewItem(furniture, index, context));
+                              return StreamBuilder<
+                                  DocumentSnapshot<Map<String, dynamic>>>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('tasks')
+                                    .doc(snapshot.data!.docs[index]['task'])
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    Furniture furniture = Furniture(
+                                        id: snapshot.data!.id,
+                                        title: snapshot.data!['title'],
+                                        description:
+                                            snapshot.data!['description'],
+                                        price: "",
+                                        city: snapshot.data!['city'],
+                                        author: snapshot.data!['author'],
+                                        images: [
+                                          AppAsset.IMGtoJPG(
+                                              snapshot.data!['category'])
+                                        ],
+                                        colors: <FurnitureColor>[
+                                          FurnitureColor(
+                                              color: const Color(0xFF616161),
+                                              isSelected: true),
+                                          FurnitureColor(
+                                              color: const Color(0xFF424242)),
+                                        ]);
+                                    return Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: _listViewItem(
+                                            furniture, index, context, "", ""));
+                                  } else {
+                                    return Text("No offers Avaliable");
+                                  }
+                                },
+                              );
                             },
                           );
                         } else {
-                          return CircularProgressIndicator(
-                            color: kPrimaryColor,
-                          );
+                          return Text("No offers offered Yet");
                         }
                       })),
             ])),
-          //---------------------------------------------------------------------------------------------------------------------------
-      ])),
-        );
+            //---------------------------------------------------------------------------------------------------------------------------
+          ])),
+    );
   }
 
-  Widget _listViewItem(Furniture furniture, int index, BuildContext context) {
+  Widget _listViewItem(Furniture furniture, int index, BuildContext context,
+      String author, String task_id) {
     Future _navigate(Furniture furniture) {
       return Navigator.push(context, MaterialPageRoute(builder: (context) {
         return OfficeFurnitureDetailScreen(furniture: furniture);
@@ -277,6 +392,154 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                 ),
               ),
             ),
+            /*
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Chip(
+                      avatar: Icon(
+                        Icons.local_offer,
+                        color: ButtonsColors,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        side: const BorderSide(color: Colors.white, width: 2),
+                      ),
+                      backgroundColor: kPrimaryColor,
+                      padding: const EdgeInsets.all(5.0),
+                      label: Text(
+                        "10",
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          height: 1.4,
+                          fontWeight: FontWeight.bold,
+                          color: ButtonsColors,
+                        ),
+                      )),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Chip(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        side: const BorderSide(color: Colors.white, width: 0),
+                      ),
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.all(5.0),
+                      label: Text(
+                        "accepted",
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          height: 1.4,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )),
+                )
+              ],
+            )
+            */
+            if (author == FirebaseAuth.instance.currentUser!.uid) ...[
+              StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("offers")
+                      .where("task", isEqualTo: task_id)
+                      .snapshots(),
+                  builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      var count = 0;
+                      for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                        if (snapshot.data!.docs[i]['task'] == task_id) {
+                          count++;
+                        }
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Chip(
+                                avatar: Icon(
+                                  Icons.local_offer,
+                                  color: ButtonsColors,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  side: const BorderSide(
+                                      color: Colors.white, width: 2),
+                                ),
+                                backgroundColor: kPrimaryColor,
+                                padding: const EdgeInsets.all(5.0),
+                                label: Text(
+                                  count.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    height: 1.4,
+                                    fontWeight: FontWeight.bold,
+                                    color: ButtonsColors,
+                                  ),
+                                )),
+                          ),
+                          StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection("notifs")
+                                  .where("status", isEqualTo: "accepted")
+                                  .snapshots(),
+                              builder: ((context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (snapshot.hasData) {
+                                  bool isaccepted = false;
+                                  for (int i = 0;
+                                      i < snapshot.data!.docs.length;
+                                      i++) {
+                                    if (snapshot.data!.docs[i]['task'] ==
+                                        task_id) {
+                                      isaccepted = true;
+                                    }
+                                  }
+                                  if (isaccepted) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(right: 10),
+                                      child: Chip(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            side: const BorderSide(
+                                                color: Colors.white, width: 0),
+                                          ),
+                                          backgroundColor: Colors.green,
+                                          padding: const EdgeInsets.all(5.0),
+                                          label: Text(
+                                            "accepted",
+                                            style: const TextStyle(
+                                              fontSize: 14.0,
+                                              height: 1.4,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          )),
+                                    );
+                                  } else {
+                                    return Offstage(
+                                      offstage: true,
+                                    );
+                                  }
+                                } else
+                                  return Offstage(
+                                    offstage: true,
+                                  );
+                              }))
+                        ],
+                      );
+                    } else {
+                      return Offstage(
+                        offstage: true,
+                      );
+                    }
+                  })),
+            ]
           ],
         ));
     return GestureDetector(
@@ -296,5 +559,22 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
         height: 100,
       ),
     ).fadeAnimation(0.4);
+  }
+
+  doc(String id, String t, String d, String p, String c, String a, String cat,
+      AsyncSnapshot<QuerySnapshot> snapshot, int index) async {
+    await FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(snapshot.data!.docs[index]['task'])
+        .get()
+        .then((value) {
+      id = value.id;
+      t = value['title'];
+      d = value['description'];
+      c = value['city'];
+      a = value['author'];
+      p = value['price'];
+      cat = value['category'];
+    });
   }
 }
