@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/src/view/screen/Searched.dart';
 import 'package:flutter_auth/src/view/screen/home_screen.dart';
 import 'package:flutter_auth/src/view/screen/office_furniture_list_screen.dart';
+import 'package:flutter_auth/src/view/widget/notification.dart';
 
 import '../../../constants.dart';
 import '../../../core/app_data.dart';
@@ -21,54 +22,53 @@ class notification extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.black, // <-- SEE HERE
-        ),
-        centerTitle: true,
-        backgroundColor: kPrimaryLightColor,
-        elevation: 1,
-        title: Text(
-          'Notifications',
-          style: TextStyle(
-            color: kPrimaryColor,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            shadows: <Shadow>[
-              Shadow(
-                offset: Offset(5.0, 5.0),
-                blurRadius: 2.0,
-                color: ButtonsColors,
-              ),
-            ],
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.black, // <-- SEE HERE
+          ),
+          centerTitle: true,
+          backgroundColor: kPrimaryLightColor,
+          elevation: 1,
+          title: Text(
+            'Notifications',
+            style: TextStyle(
+              color: kPrimaryColor,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              shadows: <Shadow>[
+                Shadow(
+                  offset: Offset(5.0, 5.0),
+                  blurRadius: 2.0,
+                  color: ButtonsColors,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(15),
-        child: ListView(
-          children: [
-            /*const Text("waiting for responce", style: h2Style),
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                /*const Text("waiting for responce", style: h2Style),
             FurnitureListView(
               furnitureList: AppData.furnitureList,
               // onTap: _navigate,
             ),*/
-            const SizedBox(
-              height: defaultPadding,
+
+                notification_result(_navigate),
+              ],
             ),
-            //  search_result(searched, _navigate),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
 
-Widget notification_result(String s, dynamic Function(Furniture)? nav) {
-  return Searched(
+Widget notification_result(dynamic Function(Furniture)? nav) {
+  return notifi(
     furnitureList: AppData.furnitureList,
     isHorizontal: false,
-    searched: s,
     onTap: nav,
   );
 }

@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -185,6 +183,16 @@ class _OfficeFurnitureDetailScreenState
                                               "Thank you for making Oun Clean!")
                                       .show();
                                 });
+                              } else {
+                                AwesomeDialog(
+                                        context: context,
+                                        dialogType: DialogType.error,
+                                        animType: AnimType.rightSlide,
+                                        headerAnimationLoop: false,
+                                        autoHide: const Duration(seconds: 3),
+                                        title: "Error",
+                                        desc: "Category is required")
+                                    .show();
                               }
                             },
                             btnOkText: "Submit",
@@ -1058,106 +1066,238 @@ class _OfficeFurnitureDetailScreenState
                                                           ),
                                                         ),
                                                         Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                        .all(
-                                                                    Radius
-                                                                        .circular(
-                                                                            5)),
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                color: const Color
-                                                                            .fromARGB(
-                                                                        255,
-                                                                        0,
-                                                                        69,
-                                                                        172)
-                                                                    .withOpacity(
-                                                                        0.5),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                          .all(
+                                                                      Radius.circular(
+                                                                          5)),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          0,
+                                                                          69,
+                                                                          172)
+                                                                      .withOpacity(
+                                                                          0.5),
 
-                                                                spreadRadius: 2,
-                                                                blurRadius: 3,
-                                                                offset: const Offset(
-                                                                    0,
-                                                                    3), // changes position of shadow
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          child: RatingBar(
-                                                            minRating: 1,
-                                                            maxRating: 5,
-                                                            initialRating: 5,
-                                                            onRatingUpdate:
-                                                                (rr) {
-                                                              rating = rr;
-                                                              AwesomeDialog(
-                                                                context:
-                                                                    context,
-                                                                dialogType:
-                                                                    DialogType
-                                                                        .noHeader,
-                                                                dismissOnTouchOutside:
-                                                                    false,
-                                                                dismissOnBackKeyPress:
-                                                                    false,
-                                                                headerAnimationLoop:
-                                                                    false,
-                                                                titleTextStyle: TextStyle(
-                                                                    fontSize:
-                                                                        20,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w800,
-                                                                    color: Colors
-                                                                        .green),
-                                                                title: "Rating",
-                                                                desc:
-                                                                    "your rate is ${rating} of 5",
-                                                                btnCancelText:
-                                                                    "Cancel",
-                                                                btnOkText:
-                                                                    "Rate",
-                                                                btnCancelOnPress:
-                                                                    () {},
-                                                                btnOkOnPress:
-                                                                    () {
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          "rate")
-                                                                      .add({
-                                                                    'rate':
-                                                                        rating,
-                                                                    'task': widget
-                                                                        .furniture
-                                                                        .id,
-                                                                    'user':
-                                                                        provider,
-                                                                  });
-                                                                  setState(() {
-                                                                    
-                                                                  });
-                                                                },
-                                                              ).show();
-                                                            },
-                                                            ratingWidget: RatingWidget(
-                                                                full: Icon(
-                                                                    Icons.star,
-                                                                    color: Colors
-                                                                        .yellow),
-                                                                half: Icon(
-                                                                    Icons.star,
-                                                                    color: Colors
-                                                                        .grey),
-                                                                empty: Icon(
-                                                                    Icons.star,
-                                                                    color: Colors
-                                                                        .grey)),
-                                                          ),
-                                                        ),
+                                                                  spreadRadius:
+                                                                      2,
+                                                                  blurRadius: 3,
+                                                                  offset: const Offset(
+                                                                      0,
+                                                                      3), // changes position of shadow
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child:
+                                                                StreamBuilder(
+                                                              stream: FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      "rate")
+                                                                  .where('user',
+                                                                      isEqualTo:
+                                                                          provider)
+                                                                  .snapshots(),
+                                                              builder: ((context,
+                                                                  AsyncSnapshot<
+                                                                          QuerySnapshot>
+                                                                      snapshot) {
+                                                                if (snapshot
+                                                                    .hasData) {
+                                                                  return RatingBar(
+                                                                    minRating:
+                                                                        1,
+                                                                    maxRating:
+                                                                        5,
+                                                                    initialRating:
+                                                                        0,
+                                                                    onRatingUpdate:
+                                                                        (rr) {
+                                                                      rating =
+                                                                          rr;
+                                                                      AwesomeDialog(
+                                                                        context:
+                                                                            context,
+                                                                        dialogType:
+                                                                            DialogType.noHeader,
+                                                                        dismissOnTouchOutside:
+                                                                            false,
+                                                                        dismissOnBackKeyPress:
+                                                                            false,
+                                                                        headerAnimationLoop:
+                                                                            false,
+                                                                        titleTextStyle: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            fontWeight:
+                                                                                FontWeight.w800,
+                                                                            color: Colors.green),
+                                                                        title:
+                                                                            "Rating",
+                                                                        desc:
+                                                                            "your rate is ${rating} of 5",
+                                                                        btnCancelText:
+                                                                            "Cancel",
+                                                                        btnOkText:
+                                                                            "Rate",
+                                                                        btnCancelOnPress:
+                                                                            () {},
+                                                                        btnOkOnPress:
+                                                                            () {
+                                                                          FirebaseFirestore
+                                                                              .instance
+                                                                              .collection("rate")
+                                                                              .add({
+                                                                            'rate':
+                                                                                rating,
+                                                                            'task':
+                                                                                widget.furniture.id,
+                                                                            'user':
+                                                                                provider,
+                                                                          });
+                                                                          double
+                                                                              all_rates =
+                                                                              0;
+                                                                          int no_raters = snapshot
+                                                                              .data!
+                                                                              .docs
+                                                                              .length;
+
+                                                                          for (int i = 0;
+                                                                              i < snapshot.data!.docs.length;
+                                                                              i++) {
+                                                                            all_rates +=
+                                                                                double.parse(snapshot.data!.docs[i]['rate'].toString());
+                                                                          }
+                                                                          var total =
+                                                                              all_rates / no_raters;
+                                                                          FirebaseFirestore
+                                                                              .instance
+                                                                              .collection(
+                                                                                  "users")
+                                                                              .doc(
+                                                                                  provider)
+                                                                              .update({
+                                                                            'rate':
+                                                                                total
+                                                                          });
+                                                                          setState(
+                                                                              () {});
+                                                                        },
+                                                                      ).show();
+                                                                    },
+                                                                    ratingWidget: RatingWidget(
+                                                                        full: Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color:
+                                                                                kPrimaryColor),
+                                                                        half: Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color: Colors
+                                                                                .grey),
+                                                                        empty: Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color:
+                                                                                Colors.grey)),
+                                                                  );
+                                                                } else {
+                                                                  return RatingBar(
+                                                                    minRating:
+                                                                        1,
+                                                                    maxRating:
+                                                                        5,
+                                                                    initialRating:
+                                                                        0,
+                                                                    onRatingUpdate:
+                                                                        (rr) {
+                                                                      rating =
+                                                                          rr;
+                                                                      AwesomeDialog(
+                                                                        context:
+                                                                            context,
+                                                                        dialogType:
+                                                                            DialogType.noHeader,
+                                                                        dismissOnTouchOutside:
+                                                                            false,
+                                                                        dismissOnBackKeyPress:
+                                                                            false,
+                                                                        headerAnimationLoop:
+                                                                            false,
+                                                                        titleTextStyle: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            fontWeight:
+                                                                                FontWeight.w800,
+                                                                            color: Colors.green),
+                                                                        title:
+                                                                            "Rating",
+                                                                        desc:
+                                                                            "your rate is ${rating} of 5",
+                                                                        btnCancelText:
+                                                                            "Cancel",
+                                                                        btnOkText:
+                                                                            "Rate",
+                                                                        btnCancelOnPress:
+                                                                            () {},
+                                                                        btnOkOnPress:
+                                                                            () {
+                                                                          FirebaseFirestore
+                                                                              .instance
+                                                                              .collection("rate")
+                                                                              .add({
+                                                                            'rate':
+                                                                                rating,
+                                                                            'task':
+                                                                                widget.furniture.id,
+                                                                            'user':
+                                                                                provider,
+                                                                          });
+                                                                          FirebaseFirestore
+                                                                              .instance
+                                                                              .collection(
+                                                                                  "users")
+                                                                              .doc(
+                                                                                  provider)
+                                                                              .update({
+                                                                            'rate':
+                                                                                rating
+                                                                          });
+
+                                                                          setState(
+                                                                              () {});
+                                                                        },
+                                                                      ).show();
+                                                                    },
+                                                                    ratingWidget: RatingWidget(
+                                                                        full: Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color:
+                                                                                kPrimaryColor),
+                                                                        half: Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color: Colors
+                                                                                .grey),
+                                                                        empty: Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color:
+                                                                                Colors.grey)),
+                                                                  );
+                                                                }
+                                                              }),
+                                                            )),
                                                       ]);
                                                     } else {
                                                       return Offstage(

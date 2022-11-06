@@ -297,6 +297,7 @@ class SignUpForm extends StatelessWidget {
             'name': nameController.text,
             'password': PasswordController.text,
             'phone': PhoneController.text,
+            'rate': 0
           });
         }).onError((e, stackTrace) {
           showAlertDialog(context, e.toString());

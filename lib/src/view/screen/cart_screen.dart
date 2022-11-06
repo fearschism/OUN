@@ -295,7 +295,7 @@ class _ServiceRequestPageWidgetState extends State<ServiceRequestPageWidget> {
                             shrinkWrap: true,
                             reverse: true,
                             physics: const ClampingScrollPhysics(),
-                            itemCount: snapshot.data?.docs.length,
+                            itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
                               return StreamBuilder<
                                   DocumentSnapshot<Map<String, dynamic>>>(

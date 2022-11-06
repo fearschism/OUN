@@ -123,7 +123,7 @@ class Searched extends StatelessWidget {
                             title: snapshot.data!.docs[index]['title'],
                             description: snapshot.data!.docs[index]
                                 ['description'],
-                            price: snapshot.data!.docs[index]['price'],
+                            price: "",
                             city: snapshot.data!.docs[index]['city'],
                             images: [
                               AppAsset.IMGtoJPG(
