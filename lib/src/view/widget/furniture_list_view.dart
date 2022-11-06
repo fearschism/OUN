@@ -1,4 +1,4 @@
-import 'dart:ffi';
+import 'dart:async';
 import 'dart:math';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -404,6 +404,8 @@ class FurnitureListView extends StatelessWidget {
                                           'status': 'accepted',
                                           'new': true
                                         });
+
+                                        
                                       }
                                     }
                                     await AwesomeDialog(
@@ -622,4 +624,7 @@ class FurnitureListView extends StatelessWidget {
           .snapshots();
     }
   }
+
+ 
+  
 }

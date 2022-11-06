@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,7 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../../../core/app_color.dart';
 import '../../../core/app_extension.dart';
 import '../../../core/app_style.dart';
@@ -1033,7 +1035,141 @@ class _OfficeFurnitureDetailScreenState
                                                   )
                                                 ],
                                               ),
-                                            )
+                                            ),
+                                            FutureBuilder<bool>(
+                                                future: israted(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasData) {
+                                                    if (snapshot.data! ==
+                                                        false) {
+                                                      return Column(children: [
+                                                        Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  top: 10,
+                                                                  bottom: 10),
+                                                          child: Text(
+                                                            "Rate",
+                                                            style: TextStyle(
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white,
+                                                            borderRadius:
+                                                                const BorderRadius
+                                                                        .all(
+                                                                    Radius
+                                                                        .circular(
+                                                                            5)),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: const Color
+                                                                            .fromARGB(
+                                                                        255,
+                                                                        0,
+                                                                        69,
+                                                                        172)
+                                                                    .withOpacity(
+                                                                        0.5),
+
+                                                                spreadRadius: 2,
+                                                                blurRadius: 3,
+                                                                offset: const Offset(
+                                                                    0,
+                                                                    3), // changes position of shadow
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          child: RatingBar(
+                                                            minRating: 1,
+                                                            maxRating: 5,
+                                                            initialRating: 5,
+                                                            onRatingUpdate:
+                                                                (rr) {
+                                                              rating = rr;
+                                                              AwesomeDialog(
+                                                                context:
+                                                                    context,
+                                                                dialogType:
+                                                                    DialogType
+                                                                        .noHeader,
+                                                                dismissOnTouchOutside:
+                                                                    false,
+                                                                dismissOnBackKeyPress:
+                                                                    false,
+                                                                headerAnimationLoop:
+                                                                    false,
+                                                                titleTextStyle: TextStyle(
+                                                                    fontSize:
+                                                                        20,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w800,
+                                                                    color: Colors
+                                                                        .green),
+                                                                title: "Rating",
+                                                                desc:
+                                                                    "your rate is ${rating} of 5",
+                                                                btnCancelText:
+                                                                    "Cancel",
+                                                                btnOkText:
+                                                                    "Rate",
+                                                                btnCancelOnPress:
+                                                                    () {},
+                                                                btnOkOnPress:
+                                                                    () {
+                                                                  FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          "rate")
+                                                                      .add({
+                                                                    'rate':
+                                                                        rating,
+                                                                    'task': widget
+                                                                        .furniture
+                                                                        .id,
+                                                                    'user':
+                                                                        provider,
+                                                                  });
+                                                                  setState(() {
+                                                                    
+                                                                  });
+                                                                },
+                                                              ).show();
+                                                            },
+                                                            ratingWidget: RatingWidget(
+                                                                full: Icon(
+                                                                    Icons.star,
+                                                                    color: Colors
+                                                                        .yellow),
+                                                                half: Icon(
+                                                                    Icons.star,
+                                                                    color: Colors
+                                                                        .grey),
+                                                                empty: Icon(
+                                                                    Icons.star,
+                                                                    color: Colors
+                                                                        .grey)),
+                                                          ),
+                                                        ),
+                                                      ]);
+                                                    } else {
+                                                      return Offstage(
+                                                        offstage: true,
+                                                      );
+                                                    }
+                                                  } else {
+                                                    return Offstage(
+                                                      offstage: true,
+                                                    );
+                                                  }
+                                                }),
                                           ],
                                         );
                                       } else {
@@ -1136,6 +1272,18 @@ class _OfficeFurnitureDetailScreenState
       );
     } else {
       return Text("");
+    }
+  }
+
+  Future<bool> israted() async {
+    var documents = await FirebaseFirestore.instance
+        .collection("rate")
+        .where('task', isEqualTo: widget.furniture.id)
+        .get();
+    if (documents.docs.length == 0) {
+      return false;
+    } else {
+      return true;
     }
   }
 }
